@@ -4,18 +4,18 @@
 	<meta charset="utf-8">
 
 	{{with subtemplate . "title"}}
-	<title>{{.}} - Ghostbin</title>
+	<title>MenuDocs Bin ({{.}}) </title>
 	{{else}}
-	<title>Ghostbin</title>
+	<title>MenuDocs | Bin</title>
 	{{end}}
 	<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<link rel="icon" href="/favicon.ico">
-	<link rel="apple-touch-icon" href="/ghostbin-icon120.png" sizes="120x120">
-	<link rel="apple-touch-icon" href="/ghostbin-icon152.png" sizes="152x152">
-	<link rel="apple-touch-icon" href="/ghostbin-icon76.png" sizes="76x76">
-	<link rel="apple-touch-icon" href="/ghostbin-icon72.png" sizes="72x72">
+	<link rel="apple-touch-icon" href="/menudocs-icon120.png" sizes="120x120">
+	<link rel="apple-touch-icon" href="/menudocs-icon152.png" sizes="152x152">
+	<link rel="apple-touch-icon" href="/menudocs-icon76.png" sizes="76x76">
+	<link rel="apple-touch-icon" href="/menudocs-icon72.png" sizes="72x72">
 
 	<!-- build:css /css/lib.min.css -->
 	<link rel="stylesheet" href="/css/fontello.css" type="text/css" media="all">
@@ -43,7 +43,7 @@
 	<!-- build:js /js/lib.min.js -->
 	<script src="/js/jquery-2.0.3.js" type="text/javascript"></script>
 	<script src="/js/select2.js" type="text/javascript"></script>
-	<script src="/js/ghostbin.jQuery.js" type="text/javascript"></script>
+	<script src="/js/menudocs.jQuery.js" type="text/javascript"></script>
 	<script src="/js/bootstrap.js" type="text/javascript"></script>
 	<script src="/js/mozcookies.js" type="text/javascript"></script>
 	<!-- endbuild -->
@@ -76,12 +76,12 @@
 <div class="paste-toolbox">
 	{{template "home-button"}}
 	<span class="paste-title">
-		<strong>Wat Machine</strong>
+		<strong>Error!</strong>
 	</span>
 </div>
 <div class="content">
 <p>
-<strong>AIEEEEEE!</strong><br>
+<strong>Whoops!</strong><br>
 It looks like you've stumbled upon a page (<strong>{{.Page}}</strong>) that should exist, but doesn't have a template?
 </p>
 </div>
@@ -94,7 +94,7 @@ It looks like you've stumbled upon a page (<strong>{{.Page}}</strong>) that shou
 		<h3>Options</h3>
 	</div>
 	<div class="modal-body">
-		<h4><i class="icon icon-remember"> </i>Persistence</h4>
+		<h4><i class="icon icon-remember"> </i>Settings</h4>
 		<label class="checkbox">
 			<input name="saveLanguage" type="checkbox" data-gb-key="saveLanguage"> Remember my last-used language
 		</label>
@@ -103,8 +103,8 @@ It looks like you've stumbled upon a page (<strong>{{.Page}}</strong>) that shou
 		</label>
 		<h4><i class="icon icon-user"> </i>Account</h4>
 		{{partial . "login_logout"}}
-		<h4><i class="icon icon-wrench"> </i>Miscellanea</h4>
-		<p><a target="_blank" href="/about">About Ghostbin</a> <small>(in a new window)</small>
+		<h4><i class="icon icon-wrench"> </i>Miscellaneous</h4>
+		<p><a target="_blank" href="https://menudocs.org">MenuDocs Home</a> <small>(in a new window)</small>
 		<br><a href="/session">My Pastes</a></p>
 	</div>
 	<div class="modal-footer">

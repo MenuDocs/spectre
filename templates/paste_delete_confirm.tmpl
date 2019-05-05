@@ -7,8 +7,8 @@
 <div class="paste-miniature">
 <div class="code{{if .Obj.Language.DisplayStyle}} code-{{.Obj.Language.DisplayStyle}}{{end}}" id="code">{{render .Obj}}</div>
 </div>
-<button type="submit" class="btn btn-danger btn-phone-expand">Destroy! Annihilate!</button>
-<a href="{{pasteURL "show" .Obj}}" class="btn btn-phone-expand">Nevermind</a>
+<button type="submit" class="btn btn-danger btn-phone-expand">Confirm</button>
+<a href="{{pasteURL "show" .Obj}}" class="btn btn-phone-expand">Cancel</a>
 </form>
 </div>
 {{end}}
