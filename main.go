@@ -990,7 +990,7 @@ func main() {
 	router.Methods("GET").Path("/auth/token").Handler(http.HandlerFunc(authTokenHandler))
 	router.Methods("GET").Path("/auth/token/{token}").Handler(http.HandlerFunc(authTokenPageHandler)).Name("auth_token_login")
 
-	router.Path("/").Handler(RenderPageHandler("index"))
+	router.Path("/").Handler(RenderPageHandler("react_index"))
 
 	router.Methods("GET").
 		Path("/api").
