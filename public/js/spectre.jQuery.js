@@ -51,7 +51,7 @@
 })(jQuery);
 
 /* From https://github.com/sprucemedia/jQuery.divPlaceholder.js */
-(function ($) {
+/*(function ($) {
         $(document).on('change keydown keypress input', '*[data-placeholder]', function() {
                 if (this.textContent) {
                         this.setAttribute('data-div-placeholder-content', 'true');
@@ -63,4 +63,37 @@
 	$(function() {
 		$("*[data-placeholder]").trigger("change");
 	});
-})(jQuery);
+})(jQuery);*/
+
+const theEvents = ['change', 'keydown', 'keypress', 'input'];
+
+/**
+ *
+ * @param {Event|KeyboardEvent} event
+ */
+function dataPlaceHolderListener(event) {
+	const el = event.target;
+
+	if (el.textContent) {
+		el.setAttribute('data-div-placeholder-content', 'true');
+	} else {
+		el.removeAttribute('data-div-placeholder-content');
+	}
+}
+
+for (const e of theEvents) {
+	document.addEventListener(e, (event) => {
+		const dataset = event.target.dataset;
+
+		if (dataset && dataset.placeholder) {
+			dataPlaceHolderListener(event);
+		}
+	});
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+	const changeEvent = document.createEvent('HTMLEvents');
+	changeEvent.initEvent('change', true, false);
+
+	document.querySelectorAll('*[data-placeholder]').forEach((el) => el.dispatchEvent(changeEvent));
+});
