@@ -1,6 +1,6 @@
 function fillWithLineNumbers(el, lines) {
 	if (lines === Number(el.dataset.lines)) {
-		return;
+		return Promise.reject();
 	}
 
 	let out = '';
@@ -34,20 +34,6 @@ function scrollMinimal (el) {
 
 (function($){
 	"use strict";
-	$.fn.fillWithLineNumbers = function(lines, callback) {
-		var lineNumberTrough = $(this[0]);
-		if(lines === (0+lineNumberTrough.data("lines"))) return;
-
-		var n="";
-		var i = 0;
-		for(i=0; i < lines; i++) {
-			n += '<span id="L'+(i+1)+'">'+(i+1)+"</span>";
-		}
-		lineNumberTrough.html(n);
-
-		lineNumberTrough.data("lines", lines);
-		if(callback) callback();
-	};
 	$.fn.onMediaQueryChanged = function(mediaQuery, callback) {
 		var self = this;
 		var mql = window.matchMedia(mediaQuery);
@@ -70,21 +56,6 @@ function scrollMinimal (el) {
 		return object;
 	};
 })(jQuery);
-
-/* From https://github.com/sprucemedia/jQuery.divPlaceholder.js */
-/*(function ($) {
-        $(document).on('change keydown keypress input', '*[data-placeholder]', function() {
-                if (this.textContent) {
-                        this.setAttribute('data-div-placeholder-content', 'true');
-                }
-                else {
-                        this.removeAttribute('data-div-placeholder-content');
-                }
-        });
-	$(function() {
-		$("*[data-placeholder]").trigger("change");
-	});
-})(jQuery);*/
 
 const theEvents = ['change', 'keydown', 'keypress', 'input'];
 
