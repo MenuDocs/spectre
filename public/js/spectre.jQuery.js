@@ -1,3 +1,37 @@
+function fillWithLineNumbers(el, lines) {
+	if (lines === Number(el.dataset.lines)) {
+		return;
+	}
+
+	let out = '';
+
+	for (let i = 1; i <= lines; i++) {
+		out += `<span id="L${i}">${i}</span>`;
+	}
+
+	el.innerHTML = out;
+	el.dataset.lines = lines;
+
+	return Promise.resolve();
+}
+
+function scrollMinimal (el) {
+	const cTop = el.getBoundingClientRect().top + document.body.scrollTop;
+	const cHeight = el.offsetHeight;
+	const windowTop = window.pageYOffset;
+	const visibleHeight = window.innerHeight;
+
+	if (cTop < windowTop) {
+		window.scrollTo({
+			top: cTop
+		});
+	} else if (cTop + cHeight > windowTop + visibleHeight) {
+		window.scrollTo({
+			top: cTop - (visibleHeight / 2)
+		});
+	}
+}
+
 (function($){
 	"use strict";
 	$.fn.fillWithLineNumbers = function(lines, callback) {
@@ -13,19 +47,6 @@
 
 		lineNumberTrough.data("lines", lines);
 		if(callback) callback();
-	};
-	$.fn.scrollMinimal = function() {
-		/* From http://stackoverflow.com/questions/4217962/scroll-to-an-element-using-jquery */
-		var cTop = this.offset().top;
-		var cHeight = this.outerHeight(true);
-		var windowTop = $(window).scrollTop();
-		var visibleHeight = $(window).height();
-
-		if (cTop < windowTop) {
-			$(window).scrollTop(cTop);
-		} else if (cTop + cHeight > windowTop + visibleHeight) {
-			$(window).scrollTop(cTop - (visibleHeight / 2) );
-		}
 	};
 	$.fn.onMediaQueryChanged = function(mediaQuery, callback) {
 		var self = this;

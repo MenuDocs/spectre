@@ -201,8 +201,11 @@
 $(function() {
 	"use strict";
 
+	const codeEditor = document.querySelector('#code-editor');
+	const code = document.querySelector('#code');
+
 	var pasteForm = $("#pasteForm");
-	var code = $("#code"), codeeditor = $("#code-editor");
+	var code$ = $("#code"), codeeditor$ = $("#code-editor");
 	if(pasteForm.length > 0) {
 		// Initialize the form.
 		var langbox = pasteForm.find("#langbox");
@@ -245,7 +248,7 @@ $(function() {
 			});
 		}
 		pasteForm.on('submit', function() {
-			if((codeeditor.val().match(/[^\s]/)||[]).length !== 0) {
+			if((codeeditor$.val().match(/[^\s]/)||[]).length !== 0) {
 				if(context === "new") {
 					if(Spectre.getPreference("saveExpiration", "false") === "true") {
 						Spectre.setDefaultExpiration(pasteForm.find("input[name='expire']").val());
@@ -267,7 +270,7 @@ $(function() {
 		});
 		$("#editable-paste-title").keypress(function(e) {
 			if(e.which == 13) {
-				$(codeeditor).focus();
+				$(codeeditor$).focus();
 				return false;
 			}
 			return true;
@@ -350,101 +353,138 @@ $(function() {
 
 	// Common for the following functions.
 	var lineNumberTrough = $("#line-numbers");
+	const lineNumbers = document.querySelector('#line-numbers');
 
 	(function(){
-		if(lineNumberTrough.length === 0) return;
+		if (!lineNumbers) {
+			return;
+		}
 
-		if(code.length > 0) {
-			var linebar = $(document.createElement('div'))
-					.addClass("line-highlight-bar")
-					.hide()
-					.appendTo('body');
-			var permabar = linebar
-					.clone()
-					.addClass("line-highlight-bar-permanent")
-					.appendTo("body");
+		if (code) {
+			const linebar = document.createElement('div');
 
-			var positionLinebar = function(linebar) {
-				linebar
-					.css("left", lineNumberTrough.outerWidth())
-					.css("top", $(this).position().top + $(this).parent().position().top)
-					.width(code.outerWidth())
-					.show();
-			};
+			linebar.style.display = 'none';
+			linebar.classList.add('line-highlight-bar', 'test');
 
-			var setSelectedLineNumber = function(line) {
-				if(typeof line !== 'undefined') {
-					permabar.data("cur-line", line);
-					history.replaceState({"line":line}, "", "#L"+line);
-				} else {
-					permabar.removeData("cur-line");
-					history.replaceState(null, "", "#");
+			const permabar = linebar.cloneNode();
+
+			permabar.classList.add('line-highlight-bar-permanent');
+
+			document.body.append(linebar, permabar);
+
+			function positionLineBar (bar, span) {
+				bar.style.left = `${lineNumbers.offsetWidth}px`;
+				bar.style.top = `${span.offsetTop + span.parentElement.offsetTop}px`;
+				bar.style.width = `${code.offsetWidth}px`;
+				bar.style.display = 'block';
+			}
+
+			function setSelectedLineNumber (line) {
+				if (!line) {
+					history.replaceState(null, '', '#');
+					delete permabar.dataset.curLine;
+
+					return;
 				}
-			};
 
-			var lineFromHash = function(hash) {
-				if(!hash) return undefined;
-				var v = hash.match(/^#L(\d+)/);
-				if(typeof v !== 'undefined' && v.length > 0) {
-					return v[1];
+				permabar.dataset.curLine = line;
+				history.replaceState({ 'line': line }, '', `#L${line}`);
+			}
+
+			function lineFromHash (hash) {
+				if (!hash) {
+					return null;
 				}
-				return undefined;
-			};
 
-			lineNumberTrough.fillWithLineNumbers((code.text().match(/\n/g)||[]).length+1, function() {
-				lineNumberTrough.children().mouseenter(function() {
-					positionLinebar.call(this, linebar);
-				}).mouseleave(function() {
-					linebar.hide();
-				}).click(function() {
-					var line = $(this).text();
-					if((0+permabar.data("cur-line")) === line) {
-						setSelectedLineNumber(undefined);
-						permabar.hide();
-						return;
-					}
-					setSelectedLineNumber(line);
-					positionLinebar.call(this, permabar);
-				});
+				const v = hash.match(/^#L(\d+)/);
 
-				$(window).on("load popstate", function() {
-					var n = lineFromHash(window.location.hash);
+				if (!v) {
+					return null;
+				}
 
-					if(n) {
-						var linespan = $("span:nth-child("+n+")", lineNumberTrough);
+				return v[1];
+			}
 
-						if(linespan.length > 0) {
-							setSelectedLineNumber(n);
-							positionLinebar.call(linespan.get(0), permabar);
+			const lineCount = (code.innerText.match(/\n/g) || []).length + 1;
 
-							setTimeout(() => {
-								linespan.scrollMinimal(); //
-							}, 250);
+			fillWithLineNumbers(lineNumbers, lineCount).then(() => {
+				// TODO: less event listeners please
+				for (const span of lineNumbers.children) {
+					span.addEventListener('mouseenter', (e) => {
+						positionLineBar(linebar, e.target);
+					});
+
+					span.addEventListener('mouseleave', () => {
+						linebar.style.display = 'none';
+					});
+
+					span.addEventListener('click', (e) => {
+						const span = e.target;
+						const line = span.innerText;
+
+						if (permabar.dataset.curLine === line) {
+							setSelectedLineNumber(undefined);
+							permabar.style.display = 'none';
+
+							return;
 						}
-					}
+
+						setSelectedLineNumber(line);
+						positionLineBar(permabar, span);
+					});
+				}
+
+				['load', 'popstate'].forEach((eName) => {
+					window.addEventListener(eName, () => {
+						const lineNr = lineFromHash(window.location.hash);
+
+						if (!lineNr) {
+							return;
+						}
+
+						const span = lineNumbers.querySelector(`span:nth-child(${lineNr})`);
+
+						if (!span) {
+							return;
+						}
+
+						setSelectedLineNumber(lineNr);
+						positionLineBar(permabar, span);
+
+						setTimeout(() => {
+							scrollMinimal(span);
+						}, 250);
+					});
 				});
 			});
-			$(window).on("resize", function() {
-				$(linebar).width(code.outerWidth());
-				$(permabar).width(code.outerWidth());
+
+			window.addEventListener('resize', () => {
+				linebar.style.width = `${code.offsetWidth}px`;
+				permabar.style.width = `${code.offsetWidth}px`;
 			});
-			$(document).on("media-query-changed", function() {
-				positionLinebar.call($("span:nth-child("+permabar.data("cur-line")+")", lineNumberTrough).get(0), permabar);
+
+			document.addEventListener('media-query-changed', () => {
+				console.log('aaa');
 			});
-		} else if(codeeditor.length > 0) {
-			codeeditor.on("input propertychange", function() {
-				lineNumberTrough.fillWithLineNumbers((codeeditor.val().match(/\n/g)||[]).length+1, function() {
+
+			// TODO: wat?
+			/*$(document).on("media-query-changed", function() {
+				positionLinebar$.call($("span:nth-child("+permabar$.data("cur-line")+")", lineNumberTrough).get(0), permabar$);
+			});*/
+		} else if(codeEditor) {
+			codeeditor$.on("input propertychange", function() {
+				lineNumberTrough.fillWithLineNumbers((codeeditor$.val().match(/\n/g)||[]).length+1, function() {
 					$(".textarea-height-wrapper").css("left", lineNumberTrough.outerWidth());
 				});
 			}).triggerHandler("input");
 			$(document).on("media-query-changed", function() {
-				codeeditor.triggerHandler("input");
+				codeeditor$.triggerHandler("input");
 			});
 		}
 	})();
 	(function(){
-		if(codeeditor.length > 0) {
-			codeeditor.keydown(function(e) {
+		if(codeeditor$.length > 0) {
+			codeeditor$.keydown(function(e) {
 				if(e.keyCode === 9 && !e.ctrlKey && !e.altKey && !e.shiftKey) {
 					var ends = [this.selectionStart, this.selectionEnd];
 					this.value = this.value.substring(0, ends[0]) + "\t" + this.value.substring(ends[1], this.value.length);
@@ -458,7 +498,7 @@ $(function() {
 			});
 
 			var changed = false;
-			codeeditor.on("input propertychange", function() {
+			codeeditor$.on("input propertychange", function() {
 				changed = true;
 			});
 
