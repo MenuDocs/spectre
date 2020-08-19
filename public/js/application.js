@@ -353,61 +353,86 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   (function () {
-    var encModal = $("#encryptModal");
-    if (encModal.length === 0) return;
+    const encryptModal = document.querySelector('#encryptModal');
+    const encryptionButton = document.querySelector('#encryptionButton');
 
-    encModal.modal({show: false});
-    var modalPasswordField = encModal.find("input[type='password']"),
-      pastePasswordField = pasteForm$.find("input[name='password']");
+    if (!encryptModal || !encryptionButton) {
+      return;
+    }
 
-    modalPasswordField.keypress(function (e) {
-      if (e.which === 13) {
-        encModal.modal("hide");
-        return false;
+    const encryptModalInstance = new BSN.Modal(encryptModal, { keyboard: true });
+    const modalPasswordField = encryptModal.querySelector('input[type="password"]');
+    const pastePasswordField = pasteForm.querySelector('input[name="password"]');
+
+    encryptModalInstance.hide();
+
+    encryptModal.addEventListener('show.bs.modal', () => {
+      modalPasswordField.value = pastePasswordField.value;
+    });
+
+    encryptModal.addEventListener('shown.bs.modal', () => {
+      modalPasswordField.focus();
+      modalPasswordField.select();
+    });
+
+    const setEncrypted = (encrypted) => {
+      const encryptionIcon = document.querySelector('#encryptionIcon');
+
+      encryptionIcon.classList.remove('icon-lock', 'icon-lock-open-alt');
+      encryptionIcon.classList.add(encrypted ? 'icon-lock' : 'icon-lock-open-alt');
+
+      document.querySelector('#encryptionButton .button-data-label').innerText = encrypted ? 'On' : '';
+    };
+
+    encryptModal.addEventListener('hidden.bs.modal', () => {
+      pastePasswordField.value = modalPasswordField.value;
+      setEncrypted(modalPasswordField.value.length > 0);
+    });
+
+    modalPasswordField.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        encryptModalInstance.hide();
       }
     });
 
-    var setEncrypted = function (encrypted) {
-      $("#encryptionIcon").removeClass("icon-lock icon-lock-open-alt").addClass(encrypted ? "icon-lock" : "icon-lock-open-alt");
-      $("#encryptionButton .button-data-label").text(encrypted ? "On" : "");
-    };
-
-    encModal.on("show", function () {
-      modalPasswordField.val(pastePasswordField.val());
-    }).on("shown", function () {
-      $(this).find("input").eq(0).focus().select();
-    }).on("hidden", function () {
-      pastePasswordField.val(modalPasswordField.val());
-      setEncrypted($(this).find("input").val().length > 0);
-    });
-
-    $("#encryptionButton").on("click", function () {
-      encModal.modal("show");
+    encryptionButton.addEventListener('click', () => {
+      encryptModalInstance.show();
     });
   })();
   (function () {
-    var expModal = $("#expireModal");
-    if (expModal.length === 0) return;
+    const expireModal = document.querySelector('#expireModal');
+    const expirationButton = document.querySelector('#expirationButton');
 
-    expModal.modal({show: false});
+    if (!expireModal || !expirationButton) {
+      return;
+    }
 
-    var expInput = pasteForm$.find("input[name='expire']");
-    var expDataLabel = $("#expirationButton .button-data-label");
+    const expireModalInstance = new BSN.Modal(expireModal, { keyboard: true });
 
-    var setExpirationSelected = function () {
-      $(this).button('toggle');
-      expInput.val($(this).data("value"));
-      expDataLabel.text($(this).data("display-value"));
+    expireModalInstance.hide();
+
+    const expireInput = pasteForm.querySelector('input[name="expire"]');
+    const expireDataLabel = document.querySelector('#expirationButton .button-data-label');
+    const setExpirationSelected = (btn) => {
+      btn.classList.add('active');
+      btn.firstChild.checked = true;
+      expireInput.value = btn.dataset.value;
+      expireDataLabel.innerHTML = btn.dataset.displayValue;
     };
 
-    setExpirationSelected.call(expModal.find("button[data-value='" + expInput.val() + "']"));
-    expModal.find("button[data-value]").on("click", function () {
-      setExpirationSelected.call(this);
-      expModal.modal("hide");
+    const expireButtonGroup = document.querySelector('#expireButtonGroup');
+
+    new BSN.Button(expireButtonGroup);
+
+    expireButtonGroup.addEventListener('change.bs.button', (event) => {
+      setExpirationSelected(expireModal.querySelector(`label[data-value].active`));
+      expireModalInstance.hide();
     });
 
-    $("#expirationButton").on("click", function () {
-      expModal.modal("show");
+    setExpirationSelected(expireModal.querySelector(`label[data-value="${expireInput.value}"]`));
+
+    expirationButton.addEventListener('click', () => {
+      expireModalInstance.show();
     });
   })();
 
@@ -629,26 +654,28 @@ document.addEventListener('DOMContentLoaded', async () => {
   var pageLoadTime = Math.floor(new Date().getTime() / 1000);
   const expireIcon = document.querySelector('#expirationIcon');
 
-  new BSN.Tooltip(expireIcon, {
-    placement: 'bottom',
-    animation: 'fade',
-    container: 'body',
-    delay: 50,
-  });
+  if (expireIcon) {
+    new BSN.Tooltip(expireIcon, {
+      placement: 'bottom',
+      animation: 'fade',
+      container: 'body',
+      delay: 50,
+    });
 
-  expireIcon.addEventListener('show.bs.tooltip', (event) => {
-    const el = event.target;
-    const refTime = Number(el.dataset.reftime);
-    const curTime = Math.floor(new Date().getTime() / 1000);
-    const adjust = pageLoadTime - refTime; // For the purpose of illustration, assume computer clock is faster.
-    const remaining = (Number(el.dataset.value) + adjust - curTime);
+    expireIcon.addEventListener('show.bs.tooltip', (event) => {
+      const el = event.target;
+      const refTime = Number(el.dataset.reftime);
+      const curTime = Math.floor(new Date().getTime() / 1000);
+      const adjust = pageLoadTime - refTime; // For the purpose of illustration, assume computer clock is faster.
+      const remaining = (Number(el.dataset.value) + adjust - curTime);
 
-    if (remaining > 0) {
-      el.dataset.title = "Expires in " + Spectre.formatDuration(remaining);
-    } else {
-      const r = Math.random();
+      if (remaining > 0) {
+        el.dataset.title = "Expires in " + Spectre.formatDuration(remaining);
+      } else {
+        const r = Math.random();
 
-      el.dataset.title = (r <= 0.5) ? "Wha-! It's going to explode! Get out while you still can!" : "He's dead, Jim.";
-    }
-  }, false);
+        el.dataset.title = (r <= 0.5) ? "Wha-! It's going to explode! Get out while you still can!" : "He's dead, Jim.";
+      }
+    }, false);
+  }
 });

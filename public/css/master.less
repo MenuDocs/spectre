@@ -90,9 +90,11 @@ p {
 }
 
 h1, h2, h3, h4, h5, h6 {
-	margin: 10px 0;
-	line-height: 20px;
-	text-rendering: optimizelegibility; // Fix the character spacing for headings
+    &:not(.modal-title) {
+        margin: 10px 0;
+    	line-height: 20px;
+    	text-rendering: optimizelegibility; // Fix the character spacing for headings
+    }
 }
 
 ul, ol {
