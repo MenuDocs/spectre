@@ -260,13 +260,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   const pasteForm = document.querySelector('#pasteForm');
 
   var pasteForm$ = $("#pasteForm");
-  var codeeditor$ = $("#code-editor");
 
   // TODO
   if (pasteForm) {
     // Initialize the form.
     var langbox = pasteForm$.find("#langbox");
-    var context = pasteForm$.data("context");
+    const context = pasteForm.dataset.context;
 
     await Spectre.loadLanguages();
 
@@ -290,22 +289,59 @@ document.addEventListener('DOMContentLoaded', async () => {
     langbox.select2("data", lang);
 
     if (context === "new") {
-      pasteForm$.find("input[name='expire']").val(Spectre.defaultExpiration());
+      pasteForm.querySelector("input[name='expire']").value = Spectre.defaultExpiration();
 
-      var optModal = $("#optionsModal");
-      optModal.modal({show: false});
 
-      optModal.find("input[type='checkbox']").on("change", function () {
-        Spectre.setPreference($(this).data("gb-key"), this.checked ? "true" : "false");
-      }).each(function () {
-        this.checked = Spectre.getPreference($(this).data("gb-key"), "false") === "true";
+      const optionsModal = document.querySelector('#optionsModal');
+      const optionsButton = document.querySelector('#optionsButton');
+      const optionsModalInstance = new BSN.Modal(optionsModal, { keyboard: true, backdrop: false });
+
+      optionsButton.addEventListener('click', () => {
+        optionsModalInstance.show();
       });
 
-      $("#optionsButton").on("click", function () {
-        optModal.modal("show");
+      Array.from(
+        optionsModal.querySelectorAll('input[type="checkbox"]')
+      ).forEach((cb) => {
+        cb.checked = Spectre.getPreference(cb.dataset.gbKey, "false") === "true";
+
+        cb.addEventListener('change', (e) => {
+          const el = e.target;
+
+          Spectre.setPreference(el.dataset.gbKey, el.checked ? "true" : "false");
+        });
       });
     }
-    pasteForm$.on('submit', function () {
+
+    pasteForm.addEventListener('submit', (e) => {
+      if (!(codeEditor.value.match(/[^\s]/) || []).length) {
+        e.preventDefault();
+        const emptyOrDeleteModal = document.querySelector('#deleteModal, #emptyPasteModal');
+        const modalInstance = new BSN.Modal(emptyOrDeleteModal, { keyboard: true, backdrop: false });
+
+        modalInstance.show();
+
+        return;
+      }
+
+      if (context === "new") {
+        if (Spectre.getPreference("saveExpiration", "false") === "true") {
+          Spectre.setDefaultExpiration(pasteForm$.find("input[name='expire']").val());
+        } else {
+          Spectre.clearDefaultExpiration();
+        }
+
+        if (Spectre.getPreference("saveLanguage", "false") === "true") {
+          Spectre.setDefaultLanguage(langbox.select2("data"));
+        } else {
+          Spectre.clearDefaultLanguage();
+        }
+      }
+
+      pasteForm.querySelector("input[name='title']").value = document.querySelector("#editable-paste-title").innerText;
+    });
+
+    /*pasteForm$.on('submit', function () {
       if ((codeeditor$.val().match(/[^\s]/) || []).length !== 0) {
         if (context === "new") {
           if (Spectre.getPreference("saveExpiration", "false") === "true") {
@@ -326,13 +362,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         return false;
       }
     });
-    $("#editable-paste-title").keypress(function (e) {
-      if (e.which == 13) {
-        $(codeeditor$).focus();
-        return false;
-      }
-      return true;
-    });
+*/
+    document.querySelector('#editable-paste-title')
+      .addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          codeEditor.focus();
+        }
+      });
   }
 
   const controls = document.querySelector('#paste-controls');
@@ -360,7 +397,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    const encryptModalInstance = new BSN.Modal(encryptModal, { keyboard: true });
+    const encryptModalInstance = new BSN.Modal(encryptModal, { keyboard: true, backdrop: false });
     const modalPasswordField = encryptModal.querySelector('input[type="password"]');
     const pastePasswordField = pasteForm.querySelector('input[name="password"]');
 
@@ -407,7 +444,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    const expireModalInstance = new BSN.Modal(expireModal, { keyboard: true });
+    const expireModalInstance = new BSN.Modal(expireModal, { keyboard: true, backdrop: false });
 
     expireModalInstance.hide();
 

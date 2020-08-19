@@ -48,8 +48,10 @@
 <div id="reportModal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
         <form name="reportForm" action="{{pasteURL "report" .Obj}}" method="post">
         <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h3>Report Paste</h3>
+            <h3 class="modal-title">Report Paste</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
         <div class="modal-body">
 		<p>For what reason do you wish to report {{with .Obj.Title}}<strong>{{.}}</strong>{{else}}paste <strong>{{.Obj.ID}}</strong>{{end}}?</p>
@@ -60,7 +62,7 @@
 		</div>
 		<div class="modal-footer">
 		<button type="submit" class="btn btn-sm btn-danger">Report Paste</button>
-		<button data-dismiss="modal" class="btn" aria-hidden="true">Nevermind</button>
+		<button data-dismiss="modal" class="btn btn-light" aria-hidden="true">Nevermind</button>
 	</div>
 	</form>
 </div>
@@ -82,10 +84,10 @@
 		</div>
 		<div id="grantContainer" class="grant-container"></div>
 		<div id="grantError" class="error" style="display:none;">There was an error generating a new grant.</div>
-		<button type="button" id="newGrantButton" class="btn">Generate Grant</button>
+		<button type="button" id="newGrantButton" class="btn btn-light">Generate Grant</button>
 	</div>
 	<div class="modal-footer">
-		<button data-dismiss="modal" class="btn" aria-hidden="true" id="cancelGranting">Nevermind</button>
+		<button data-dismiss="modal" class="btn btn-light" aria-hidden="true" id="cancelGranting">Nevermind</button>
 	</div>
 </div>
 <script>

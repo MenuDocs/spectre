@@ -2,7 +2,7 @@
 <div class="blocker hide"><div class="spinner"><i class="icon icon-spinner icon-effect-spin"> </i></div></div>
 {{if user .}}
 <p>You are logged in.</p>
-<button type="button" id="logout" class="btn"><i class="icon icon-logout"> </i>Log Out</button>
+<button type="button" id="logout" class="btn btn-dark"><i class="icon icon-logout"> </i>Log Out</button>
 <script type="text/javascript">
 document.querySelector('button#logout').addEventListener('click', () => {
   Spectre.logout();
@@ -33,7 +33,7 @@ retained as part of your user account. Promise.</small></p>
 				<div class="controls input-wrapper"><input type="password" name="confirm_password" autocomplete="off" placeholder="confirm"></div>
 			</div>
 		</div>
-		<button type="submit" class="btn phone-expand"><i class="icon icon-login"> </i>Log In or Create Account</button>
+		<button type="submit" class="btn btn-dark phone-expand"><i class="icon icon-login"> </i>Log In or Create Account</button>
 		<div id="login_error" class="phone-expand error hide"></div>
 		<div id="login_moreinfo" class="phone-expand info hide"></div>
 	</form>

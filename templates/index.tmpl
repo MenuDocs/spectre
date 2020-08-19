@@ -25,23 +25,31 @@
 
 
             <div class="modal-footer">
-                <button data-dismiss="modal" class="btn" aria-hidden="true">Okay</button>
+                <button data-dismiss="modal" class="btn btn-light" aria-hidden="true">Okay</button>
             </div>
         </div>
     </div>
 </div>
 {{end}}
-<div id="emptyPasteModal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-		<h3 class="modal-title">You try the save button.</h3>
-	</div>
-	<div class="modal-body">
-		<p>You paste nothingness into the void.</p><p><strong>You are eaten by a grue.</strong></p>
-	</div>
-	<div class="modal-footer">
-		<button data-dismiss="modal" class="btn" aria-hidden="true">Play Again</button>
-	</div>
+<div id="emptyPasteModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+        <div class="modal-header">
+            <h5 class="modal-title">You try the save button.</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>You paste nothingness into the void.</p><p><strong>You are eaten by a grue.</strong></p>
+        </div>
+        <div class="modal-footer">
+            <button data-dismiss="modal" class="btn btn-light" aria-hidden="true">Play Again</button>
+        </div>
+
+        </div>
+    </div>
 </div>
 {{template "options_modal" .}}
 {{template "index_local_customizations"}}
