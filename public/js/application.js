@@ -335,13 +335,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  (function () {
-    const controls = document.querySelector('#paste-controls');
+  const controls = document.querySelector('#paste-controls');
 
-    if (!controls) {
-      return;
-    }
-
+  if (controls) {
     // TIL that appendChild can move nodes, that's pretty cool
     onMediaQueryChanged('screen and (max-width: 767px)', (mql) => {
       if (mql.matches) {
@@ -354,7 +350,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         pc.prepend(controls);
       }
     });
-  })();
+  }
+
   (function () {
     var encModal = $("#encryptModal");
     if (encModal.length === 0) return;
@@ -618,49 +615,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     autofocus.focus();
   }
 
-  // TODO: bootstrap 4?
-  // https://getbootstrap.com/docs/4.5/components/tooltips/
-  // oh hey this is cool http://thednp.github.io/bootstrap.native/
+  // http://thednp.github.io/bootstrap.native/
   const elementsToTooltip = document.querySelectorAll('[title]:not([data-disable-tooltip])');
 
   Array.from(elementsToTooltip).map(
     tip => new BSN.Tooltip(tip, {
-      placement: 'bottom', //string
-      animation: 'slideNfade', // CSS class
+      placement: 'bottom',
+      animation: 'fade',
       container: 'body',
-      delay: 250, // integer
+      delay: 50,
     })
   );
-
-  /*$('[title]:not([data-disable-tooltip])').tooltip({
-    trigger: "hover",
-    placement: "bottom",
-    container: "body",
-    delay: {
-      show: 250,
-      hide: 50,
-    },
-  });*/
   var pageLoadTime = Math.floor(new Date().getTime() / 1000);
-  $('#expirationIcon').tooltip({
-    trigger: "hover",
-    placement: "bottom",
-    container: "body",
-    title: function () {
-      var refTime = (0 + $(this).data("reftime"));
-      var curTime = Math.floor(new Date().getTime() / 1000);
-      var adjust = pageLoadTime - refTime; // For the purpose of illustration, assume computer clock is faster.
-      var remaining = ((0 + $(this).data("value")) + adjust - curTime);
-      if (remaining > 0) {
-        return "Expires in " + window.Spectre.formatDuration(remaining);
-      } else {
-        var r = Math.random();
-        return (r <= 0.5) ? "Wha-! It's going to explode! Get out while you still can!" : "He's dead, Jim.";
-      }
-    },
-    delay: {
-      show: 250,
-      hide: 50,
-    },
+  const expireIcon = document.querySelector('#expirationIcon');
+
+  new BSN.Tooltip(expireIcon, {
+    placement: 'bottom',
+    animation: 'fade',
+    container: 'body',
+    delay: 50,
   });
+
+  expireIcon.addEventListener('show.bs.tooltip', (event) => {
+    const el = event.target;
+    const refTime = Number(el.dataset.reftime);
+    const curTime = Math.floor(new Date().getTime() / 1000);
+    const adjust = pageLoadTime - refTime; // For the purpose of illustration, assume computer clock is faster.
+    const remaining = (Number(el.dataset.value) + adjust - curTime);
+
+    if (remaining > 0) {
+      el.dataset.title = "Expires in " + Spectre.formatDuration(remaining);
+    } else {
+      const r = Math.random();
+
+      el.dataset.title = (r <= 0.5) ? "Wha-! It's going to explode! Get out while you still can!" : "He's dead, Jim.";
+    }
+  }, false);
 });

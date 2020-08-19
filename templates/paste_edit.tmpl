@@ -27,28 +27,28 @@
 	<div class="paste-toolbox-buttons float-right" id="desktop-paste-control-container">
 		<div id="paste-controls">
 			{{if not .Obj}}
-			<button id="optionsButton" title="Options" type="button" class="btn btn-dark">
+			<button id="optionsButton" title="Options" type="button" class="btn btn-sm btn-dark">
 				<i class="icon-wrench icon-large"></i>
 				<span class="button-title">Options</span>
 			</button>
 			{{end}}
-			<button id="expirationButton" title="Expiration" type="button" class="btn btn-dark">
+			<button id="expirationButton" title="Expiration" type="button" class="btn btn-sm btn-dark">
 				<i class="icon-clock icon-large"></i>
 				<span class="button-title">Expiration</span>
 				<span class="button-data-label"></span>
 			</button>
-			{{if not .Obj}}{{if encryptionAllowed .}}<button id="encryptionButton" title="Encryption" type="button" class="btn btn-dark">
+			{{if not .Obj}}{{if encryptionAllowed .}}<button id="encryptionButton" title="Encryption" type="button" class="btn btn-sm btn-dark">
 				<i id="encryptionIcon" class="icon-lock-open-alt icon-large"></i>
 				<span class="button-title">Encryption</span>
 				<span class="button-data-label"></span>
 			</button>{{end}}{{end}}
 			{{template "s2langbox" .Obj}}
-			{{if .Obj}}<button title="Delete" type="button" data-target="#deleteModal" data-toggle="modal" class="btn btn-danger">
+			{{if .Obj}}<button title="Delete" type="button" data-target="#deleteModal" data-toggle="modal" class="btn btn-sm btn-danger">
 				<i class="icon-trash icon-large"></i>
 				<span class="button-title">Delete</span>
 			</button>{{end}}
 		</div>
-		<button title="Save" type="submit" class="btn btn-primary">
+		<button title="Save" type="submit" class="btn btn-sm btn-primary">
 			<i class="icon-save icon-large"></i>
 		</button>
 	</div>
@@ -58,7 +58,7 @@
 <textarea id="code-editor" autofocus="autofocus" tabindex="1" class="code" name="text" rows="20" wrap="off">{{if .Obj}}{{pasteBody .Obj}}{{end}}</textarea>
 </div>
 </div>
-<div class="well visible-phone d-none d-sm-block d-md-none" id="phone-paste-control-container"></div>
+<div class="well visible-phone d-block d-sm-block d-md-none" id="phone-paste-control-container"></div>
 <input type="hidden" name="expire" value="{{if .Obj}}{{.Obj.Expiration}}{{else}}-1{{end}}">
 <input type="hidden" name="password" value="">
 <input type="hidden" name="title" value="">

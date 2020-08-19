@@ -5,23 +5,23 @@
 	<span class="paste-title">
 		<strong>{{with .Obj.Title}}{{.}}{{else}}Paste {{.Obj.ID}}{{end}}</strong>
 		<span class="paste-subtitle">{{.Obj.Language.Name}}
-			{{if .Obj.Encrypted}}<i class="icon-lock" title="Encrypted"></i>{{end}}{{if pasteWillExpire .Obj}}<i class="icon-clock" data-reftime="{{now.UTC.Unix}}" data-value="{{.Obj.ExpirationTime.UTC.Unix}}" id="expirationIcon"></i>{{end}}
+			{{if .Obj.Encrypted}}<i class="icon-lock" title="Encrypted"></i>{{end}}{{if pasteWillExpire .Obj}}<i class="icon-clock" data-reftime="{{now.UTC.Unix}}" data-value="{{.Obj.ExpirationTime.UTC.Unix}}" data-title="youtube.com/DSHelmondGames" id="expirationIcon"></i>{{end}}
 		</span>
 	</span>
 	<div class="paste-toolbox-buttons float-right" id="desktop-paste-control-container">
 		<div id="paste-controls">
 			<div class="btn-group">
-				<a title="View Raw" href="{{pasteURL "raw" .Obj}}" class="btn btn-dark">
+				<a title="View Raw" href="{{pasteURL "raw" .Obj}}" class="btn btn-sm btn-dark">
 					<i class="icon-file-text icon-large"></i>
 					<span class="button-title">View Raw</span>
 				</a>
-				<a title="Download" href="{{pasteURL "download" .Obj}}" class="btn btn-dark">
+				<a title="Download" href="{{pasteURL "download" .Obj}}" class="btn btn-sm btn-dark">
 					<i class="icon-download icon-large"></i>
 					<span class="button-title">Download</span>
 				</a>
 			</div>
 			{{if not .Obj.Encrypted}}
-			<button title="Report" type="button" data-target="#reportModal" data-toggle="modal" class="btn btn-dark">
+			<button title="Report" type="button" data-target="#reportModal" data-toggle="modal" class="btn btn-sm btn-dark">
 				<i class="icon-flag icon-large"></i>
 				<span class="button-title">Report</span>
 			</button>
@@ -29,11 +29,11 @@
 		</div>
 		{{if editAllowed .}}
 		<div class="btn-group">
-			<button title="Grant" type="button" data-target="#grantModal" data-toggle="modal" class="btn btn-dark">
+			<button title="Grant" type="button" data-target="#grantModal" data-toggle="modal" class="btn btn-sm btn-dark">
 				<i class="icon-lemon icon-large"></i>
 			</button>
 
-			<a title="Edit" href="{{pasteURL "edit" .Obj}}" class="btn btn-primary">
+			<a title="Edit" href="{{pasteURL "edit" .Obj}}" class="btn btn-sm btn-primary">
 				<i class="icon-edit icon-large"></i>
 			</a>
 		</div>
@@ -44,7 +44,7 @@
     <div class="code code-line-numbers unselectable" id="line-numbers" aria-hidden="true"></div>
 {{end}}
 <div class="code{{if .Obj.Language.DisplayStyle}} code-{{.Obj.Language.DisplayStyle}}{{end}}" id="code">{{render .Obj}}</div>
-<div class="well visible-phone unselectable" id="phone-paste-control-container"></div>
+<div class="well visible-phone d-block d-sm-block d-md-none unselectable" id="phone-paste-control-container"></div>
 <div id="reportModal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
         <form name="reportForm" action="{{pasteURL "report" .Obj}}" method="post">
         <div class="modal-header">
@@ -59,7 +59,7 @@
 		</select></p>
 		</div>
 		<div class="modal-footer">
-		<button type="submit" class="btn btn-danger">Report Paste</button>
+		<button type="submit" class="btn btn-sm btn-danger">Report Paste</button>
 		<button data-dismiss="modal" class="btn" aria-hidden="true">Nevermind</button>
 	</div>
 	</form>
