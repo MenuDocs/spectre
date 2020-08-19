@@ -15,6 +15,12 @@ function fillWithLineNumbers(el, lines) {
 	return Promise.resolve();
 }
 
+function listenForEvents(events, el, callback) {
+  for (const event of events) {
+    el.addEventListener(event, (e) => callback(e));
+  }
+}
+
 function scrollMinimal (el) {
 	const cTop = el.getBoundingClientRect().top + document.body.scrollTop;
 	const cHeight = el.offsetHeight;
@@ -32,21 +38,28 @@ function scrollMinimal (el) {
 	}
 }
 
+function onMediaQueryChanged (mediaQuery, callback) {
+  const mql = window.matchMedia(mediaQuery);
+  let lastMqlMatch;
+
+  mql.addEventListener('change', (e) => {
+    if(e.matches === lastMqlMatch) {
+      return;
+    }
+
+    callback(e);
+    lastMqlMatch = e.matches;
+
+    const MQCEvent = new CustomEvent('media-query-changed', {
+      detail: e
+    });
+
+    document.dispatchEvent(MQCEvent);
+  });
+}
+
 (function($){
 	"use strict";
-	$.fn.onMediaQueryChanged = function(mediaQuery, callback) {
-		var self = this;
-		var mql = window.matchMedia(mediaQuery);
-		var lastMqlMatch;
-		var mqlListener = function(mql) {
-			if(mql.matches === lastMqlMatch) return;
-			callback.call(self, mql);
-			lastMqlMatch = mql.matches;
-			$(document).trigger("media-query-changed", mql);
-		};
-		mqlListener(mql);
-		mql.addListener(mqlListener);
-	};
 	$.fn.serializeObject = function() {
 		var self = this;
 		var object = {};
@@ -73,19 +86,17 @@ function dataPlaceHolderListener(event) {
 	}
 }
 
-for (const e of theEvents) {
-	document.addEventListener(e, (event) => {
-		const dataset = event.target.dataset;
+listenForEvents(theEvents, document, (event) => {
+  const dataset = event.target.dataset;
 
-		if (dataset && dataset.placeholder) {
-			dataPlaceHolderListener(event);
-		}
-	});
-}
+  if (dataset && dataset.placeholder) {
+    dataPlaceHolderListener(event);
+  }
+});
 
 document.addEventListener('DOMContentLoaded', () => {
-	const changeEvent = document.createEvent('HTMLEvents');
-	changeEvent.initEvent('change', true, false);
+	const changeEvent = new CustomEvent('change');
 
-	document.querySelectorAll('*[data-placeholder]').forEach((el) => el.dispatchEvent(changeEvent));
+	document.querySelectorAll('*[data-placeholder]')
+    .forEach((el) => el.dispatchEvent(changeEvent));
 });

@@ -205,16 +205,21 @@ $(function () {
 
   const codeEditor = document.querySelector('#code-editor');
   const code = document.querySelector('#code');
+  const pasteForm = document.querySelector('#pasteForm');
 
   var pasteForm$ = $("#pasteForm");
-  var  codeeditor$ = $("#code-editor");
-  if (pasteForm$.length > 0) {
+  var codeeditor$ = $("#code-editor");
+
+  // TODO
+  if (pasteForm) {
     // Initialize the form.
     var langbox = pasteForm$.find("#langbox");
     var context = pasteForm$.data("context");
 
     Spectre.loadLanguages();
 
+    // TODO: find alternative
+    // https://github.com/jshjohnson/Choices
     langbox.select2({
       data: Spectre.languagesForSelect2(),
       matcher: function (term, text, lang) {
@@ -280,18 +285,23 @@ $(function () {
   }
 
   (function () {
-    var controls = $("#paste-controls");
-    if (controls.length === 0) return;
+    const controls = document.querySelector('#paste-controls');
 
-    controls.onMediaQueryChanged("screen and (max-width: 767px)", function (mql) {
-      this.detach();
-      var newParent;
+    if (!controls) {
+      return;
+    }
+
+    // TIL that appendChild can move nodes, that's pretty cool
+    onMediaQueryChanged('screen and (max-width: 767px)', (mql) => {
       if (mql.matches) {
-        newParent = $("#phone-paste-control-container");
+        const phone = document.querySelector('#phone-paste-control-container');
+
+        phone.appendChild(controls);
       } else {
-        newParent = $("#desktop-paste-control-container");
+        const pc = document.querySelector('#desktop-paste-control-container');
+
+        pc.appendChild(controls);
       }
-      newParent.prepend(this);
     });
   })();
   (function () {
@@ -465,16 +475,20 @@ $(function () {
         permabar.style.width = `${code.offsetWidth}px`;
       });
 
-      /*const mql = window.matchMedia('(max-width: 600px)');
+      // Emitted from spectre.jQuery.js
+      document.addEventListener('media-query-changed', (e) => {
+        if (!permabar.dataset.curLine) {
+          return;
+        }
 
-      mql.addEventListener('change', (e) => {
-        console.log(e);
+        const span = lineNumbers.querySelector(`span:nth-child(${permabar.dataset.curLine})`);
+
+        if (!span) {
+          return;
+        }
+
+        positionLineBar(permabar, span);
       });
-
-      // TODO: wat?
-      $(document).on("media-query-changed", function() {
-        positionLinebar$.call($("span:nth-child("+permabar$.data("cur-line")+")", lineNumberTrough).get(0), permabar$);
-      });*/
     } else if (codeEditor) {
       ['input', 'propertychange'].forEach((eName) => {
         codeEditor.addEventListener(eName, () => {
@@ -487,20 +501,14 @@ $(function () {
         });
       });
 
-      const inputEvent = document.createEvent('HTMLEvents');
+      const inputEvent = new CustomEvent('input');
 
-      inputEvent.initEvent('input', true, false);
       codeEditor.dispatchEvent(inputEvent);
 
-      /*codeeditor$.on("input propertychange", function () {
-        lineNumberTrough.fillWithLineNumbers((codeeditor$.val().match(/\n/g) || []).length + 1, function () {
-          $(".textarea-height-wrapper").css("left", lineNumberTrough.outerWidth());
-        });
-      }).triggerHandler("input");
-      // TODO: if stuff breaks, find a way to implement this
-      $(document).on("media-query-changed", function () {
-        codeeditor$.triggerHandler("input");
-      });*/
+      // Emitted from spectre.jQuery.js
+      document.addEventListener('media-query-changed', () => {
+        codeEditor.dispatchEvent(inputEvent);
+      });
     }
   })();
   (function () {
@@ -509,59 +517,58 @@ $(function () {
     }
 
     codeEditor.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && !e.altKey && !e.shiftKey && e.key === 's') {
+        e.cancelBubble = true;
+        e.preventDefault();
 
+        // submit form
+        pasteForm.submit();
+        return;
+      }
 
+      if (e.key.toLowerCase() === 'tab' && !e.ctrlKey && !e.altKey && !e.shiftKey) {
+        e.cancelBubble = true;
+        e.preventDefault();
+        // TODO: idk
+        /*const el = e.target;
 
+        const ends = [el.selectionStart, el.selectionEnd];
+        this.value = el.value.substring(0, ends[0]) + "\t" + el.value.substring(ends[1], el.value.length);
+        this.selectionStart = el.selectionEnd = ends[0] + 1;*/
+      }
     });
 
-    if (codeeditor$.length > 0) {
-      codeeditor$.keydown(function (e) {
-        // indent selected code
-        // 9 is tab
-        if (e.keyCode === 9 && !e.ctrlKey && !e.altKey && !e.shiftKey) {
-          e.cancelBubble = true;
-          e.preventDefault();
+    let changed = false;
 
-          var ends = [this.selectionStart, this.selectionEnd];
-          this.value = this.value.substring(0, ends[0]) + "\t" + this.value.substring(ends[1], this.value.length);
-          this.selectionStart = this.selectionEnd = ends[0] + 1;
-          return false;
-        }
-        // good old ctrl+s
-        // 83 is the "s" key
-        if (e.keyCode === 83 && e.ctrlKey && !e.altKey && !e.shiftKey) {
-          pasteForm$.submit();
-          return false;
-        }
-      });
+   listenForEvents(['input', 'propertychange'], codeEditor, () => {
+     // If we have a value we mark it as changed
+     changed = Boolean(codeEditor.value);
+   });
 
-      var changed = false;
-      codeeditor$.on("input propertychange", function () {
-        changed = true;
-      });
+   pasteForm.addEventListener('submit', () => {
+     changed = false;
+   });
 
-      pasteForm$.on("submit", function () {
-        changed = false;
-      });
+   const delForm = document.querySelector('[name="deleteForm"]');
 
-      var deleteForm = $("[name='deleteForm']");
+   if (delForm) {
+    delForm.addEventListener('submit', () => {
+      changed = false;
+    });
+   }
 
-      deleteForm.on("submit", function () {
-        changed = false;
-      });
-
-      window.addEventListener("beforeunload", function (e) {
-        if (!changed) {
-          return;
-        }
-        var confirmationMessage = "If you leave now, your paste will not be saved.";
-        (e || window.event).returnValue = confirmationMessage;
-        return confirmationMessage;
-      });
-    }
+   window.onbeforeunload = () => changed ? 'If you leave now, your paste will not be saved.' : undefined;
   })();
 
-  $('[autofocus]:not(:focus)').eq(0).focus();
+  const autofocus = document.querySelector('[autofocus]:not(:focus)');
+
+  if (autofocus) {
+    autofocus.focus();
+  }
+
+  // TODO: bootstrap 4?
+  // https://getbootstrap.com/docs/4.5/components/tooltips/
+  // oh hey this is cool http://thednp.github.io/bootstrap.native/
   $('[title]:not([data-disable-tooltip])').tooltip({
     trigger: "hover",
     placement: "bottom",
@@ -595,10 +602,8 @@ $(function () {
   });
 });
 
-$(function () {
-  if (docCookies.hasItem("flash")) {
-    var flash = JSON.parse(atob(docCookies.getItem("flash")));
-    docCookies.removeItem("flash", "/");
-    Spectre.displayFlash(flash);
-  }
-});
+if (docCookies.hasItem("flash")) {
+  const flash = JSON.parse(atob(docCookies.getItem("flash")));
+  docCookies.removeItem("flash", "/");
+  Spectre.displayFlash(flash);
+}
