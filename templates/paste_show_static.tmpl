@@ -6,20 +6,20 @@
 		<strong>{{with .Obj.Title}}{{.}}{{else}}Paste {{.Obj.ID}}{{end}}</strong>
 		<span class="paste-subtitle">{{.Obj.Language.Name}}</span>
 	</span>
-	<div class="paste-toolbox-buttons pull-right" id="desktop-paste-control-container">
+	<div class="paste-toolbox-buttons float-right" id="desktop-paste-control-container">
 		<div id="paste-controls">
 			<div class="btn-group">
-				<a title="View Raw" href="{{pasteURL "raw" .Obj}}" class="btn btn-inverse">
+				<a title="View Raw" href="{{pasteURL "raw" .Obj}}" class="btn btn-dark">
 					<i class="icon-file-text icon-large"></i>
 					<span class="button-title">View Raw</span>
 				</a>
-				<a title="Download" href="{{pasteURL "download" .Obj}}" class="btn btn-inverse">
+				<a title="Download" href="{{pasteURL "download" .Obj}}" class="btn btn-dark">
 					<i class="icon-download icon-large"></i>
 					<span class="button-title">Download</span>
 				</a>
 			</div>
 
-			<button title="Report" type="button" class="btn btn-inverse" disabled data-comment="Only here because of a css tooltip issue - duncte123">
+			<button title="Report" type="button" class="btn btn-dark" disabled data-comment="Only here because of a css tooltip issue - duncte123">
 				<i class="icon-flag icon-large"></i>
 				<span class="button-title">Report</span>
 			</button>

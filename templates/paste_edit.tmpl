@@ -24,20 +24,20 @@
 <div class="paste-toolbox">
 	{{template "home-button"}}
 	<span class="paste-title"><strong id="editable-paste-title" data-placeholder="{{with .Obj}}Paste {{.ID}}{{else}}New Paste{{end}}" contenteditable>{{with .Obj}}{{.Title}}{{end}}</strong></span>
-	<div class="paste-toolbox-buttons pull-right" id="desktop-paste-control-container">
+	<div class="paste-toolbox-buttons float-right" id="desktop-paste-control-container">
 		<div id="paste-controls">
 			{{if not .Obj}}
-			<button id="optionsButton" title="Options" type="button" class="btn btn-inverse">
+			<button id="optionsButton" title="Options" type="button" class="btn btn-dark">
 				<i class="icon-wrench icon-large"></i>
 				<span class="button-title">Options</span>
 			</button>
 			{{end}}
-			<button id="expirationButton" title="Expiration" type="button" class="btn btn-inverse">
+			<button id="expirationButton" title="Expiration" type="button" class="btn btn-dark">
 				<i class="icon-clock icon-large"></i>
 				<span class="button-title">Expiration</span>
 				<span class="button-data-label"></span>
 			</button>
-			{{if not .Obj}}{{if encryptionAllowed .}}<button id="encryptionButton" title="Encryption" type="button" class="btn btn-inverse">
+			{{if not .Obj}}{{if encryptionAllowed .}}<button id="encryptionButton" title="Encryption" type="button" class="btn btn-dark">
 				<i id="encryptionIcon" class="icon-lock-open-alt icon-large"></i>
 				<span class="button-title">Encryption</span>
 				<span class="button-data-label"></span>
@@ -58,7 +58,7 @@
 <textarea id="code-editor" autofocus="autofocus" tabindex="1" class="code" name="text" rows="20" wrap="off">{{if .Obj}}{{pasteBody .Obj}}{{end}}</textarea>
 </div>
 </div>
-<div class="well visible-phone" id="phone-paste-control-container"></div>
+<div class="well visible-phone d-none d-sm-block d-md-none" id="phone-paste-control-container"></div>
 <input type="hidden" name="expire" value="{{if .Obj}}{{.Obj.Expiration}}{{else}}-1{{end}}">
 <input type="hidden" name="password" value="">
 <input type="hidden" name="title" value="">

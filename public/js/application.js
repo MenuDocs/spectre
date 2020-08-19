@@ -21,7 +21,7 @@
         };
         const langmap = {};
 
-        const languages = await fetch('/languages.json', { cache: 'no-cache' })
+        const languages = await fetch('/languages.json', {cache: 'no-cache'})
           .then((r) => r.json());
 
         for (const cat of languages) {
@@ -97,58 +97,100 @@
       refreshPage: function () {
         window.location.reload();
       },
-      _loginReplyHandler: function (reply) {
-        $("#partial_container_login_logout .blocker").fadeOut("fast");
+      _loginReplyHandler: async function (reply) {
+        const loginError = document.querySelector('#login_error');
+        const resetLoginError = () => {
+          animateCSS(loginError, 'fadeOut').then(() => {
+            loginError.style.display = 'none';
+            loginError.innerHTML = '';
+          });
+        };
+
         switch (reply.status) {
           case "valid":
-            $("#login_error").text("").hide(400);
-            if (!Spectre.shouldRefreshPageOnLogin()) {
-              Spectre.updatePartial("login_logout");
-              Spectre.displayFlash({type: "success", body: "Successfully logged in."});
-            } else {
+            resetLoginError();
+            if (Spectre.shouldRefreshPageOnLogin()) {
               Spectre.refreshPage();
+            } else {
+              await Spectre.updatePartial("login_logout");
+              Spectre.displayFlash({type: "success", body: "Successfully logged in."});
             }
+
             break;
           case "moreinfo":
-            $("#login_error").text("").hide(400);
+            resetLoginError();
             if (typeof reply.invalid_fields !== "undefined") {
-              $.each(reply.invalid_fields, function (i, v) {
-                var field = $("form#loginForm input[name=" + v + "]");
-                field.parents(".control-group").eq(0).show(400);
-                field.focus();
-              });
+              for (const fieldName of reply.invalid_fields) {
+                const field = document.querySelector(`form#loginForm input[name="${fieldName}"]`);
+                const parentGroup = findParentWithClass(field, 'control-group');
+
+                parentGroup.style.display = 'block';
+                animateCSS(parentGroup, 'fadeIn').then(() => {
+                  field.focus();
+                });
+              }
             }
 
             if (typeof reply.reason !== "undefined") {
-              $("#login_moreinfo").text(reply.reason).show(400);
+              const moreInfo = document.querySelector('#login_moreinfo');
+
+              moreInfo.innerHTML = reply.reason;
+              moreInfo.style.display = 'block';
+
+              animateCSS(moreInfo, 'fadeIn');
             }
             break;
           case "invalid":
             if (typeof reply.invalid_fields !== "undefined") {
-              $.each(reply.invalid_fields, function (i, v) {
-                $("form#loginForm input[name=" + v + "]").parents(".control-group").eq(0).addClass("error");
-              });
+              for (const fieldName of reply.invalid_fields) {
+                const field = document.querySelector(`form#loginForm input[name="${fieldName}"]`);
+                const parentGroup = findParentWithClass(field, 'control-group');
+
+                parentGroup.classList.add('error');
+              }
             }
+
             if (typeof reply.reason !== "undefined") {
-              $("#login_error").text(reply.reason).show(400);
+              loginError.innerHTML = reply.reason;
+              loginError.style.display = 'block';
+
+              animateCSS(loginError, 'fadeIn');
             }
             break;
         }
       },
       login: function (data) {
-        $("#partial_container_login_logout .blocker").fadeIn("fast");
-        $("form#loginForm .control-group").removeClass("error");
-        $.ajax({
-          type: "POST",
-          url: "/auth/login",
-          async: true,
-          dataType: "json",
-          data: data,
-          success: Spectre._loginReplyHandler,
-          error: function () {
-            $("#partial_container_login_logout .blocker").fadeOut("fast");
-          },
+        const blocker = document.querySelector('#partial_container_login_logout .blocker');
+
+        blocker.classList.toggle('hide');
+        animateCSS(blocker, 'fadeIn');
+
+        for (const el of document.querySelectorAll("form#loginForm .control-group")) {
+          el.classList.remove("error");
+        }
+
+        const formData = new FormData();
+
+        Object.entries(data).forEach(([key, value]) => {
+          formData.append(key, String(value));
         });
+
+        fetch('/auth/login', {
+          method: 'POST',
+          credentials: 'same-origin',
+          body: formData
+        })
+          .then((r) => {
+            animateCSS(blocker, 'fadeOut').then(() => {
+              blocker.classList.toggle('hide');
+            });
+
+            return r.json();
+          })
+          .then((res) => Spectre._loginReplyHandler(res))
+          .catch(() => {
+            //
+          });
       },
       logout: function () {
         const blocker = document.querySelector('#partial_container_login_logout .blocker');
@@ -207,6 +249,12 @@
 })(window);
 
 document.addEventListener('DOMContentLoaded', async () => {
+  if (docCookies.hasItem("flash")) {
+    const flash = JSON.parse(atob(docCookies.getItem("flash")));
+    docCookies.removeItem("flash", "/");
+    Spectre.displayFlash(flash);
+  }
+
   const codeEditor = document.querySelector('#code-editor');
   const code = document.querySelector('#code');
   const pasteForm = document.querySelector('#pasteForm');
@@ -237,9 +285,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         return false;
       },
     });
-    var lang = Spectre.languageNamed(langbox.data("selected")) ||
-      Spectre.defaultLanguage() ||
-      Spectre.languageNamed("text");
+    var lang = Spectre.languageNamed(langbox.data("selected")) || Spectre.defaultLanguage() || Spectre.languageNamed("text");
+
     langbox.select2("data", lang);
 
     if (context === "new") {
@@ -300,11 +347,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (mql.matches) {
         const phone = document.querySelector('#phone-paste-control-container');
 
-        phone.appendChild(controls);
+        phone.prepend(controls);
       } else {
         const pc = document.querySelector('#desktop-paste-control-container');
 
-        pc.appendChild(controls);
+        pc.prepend(controls);
       }
     });
   })();
@@ -501,7 +548,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.querySelector('.textarea-height-wrapper')
               .style.left = `${lineNumbers.offsetWidth}px`;
           })
-            .catch(() => { /* Just ignore */ });
+            .catch(() => { /* Just ignore */
+            });
         });
       });
 
@@ -544,24 +592,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let changed = false;
 
-   listenForEvents(['input', 'propertychange'], codeEditor, () => {
-     // If we have a value we mark it as changed
-     changed = Boolean(codeEditor.value);
-   });
+    listenForEvents(['input', 'propertychange'], codeEditor, () => {
+      // If we have a value we mark it as changed
+      changed = Boolean(codeEditor.value);
+    });
 
-   pasteForm.addEventListener('submit', () => {
-     changed = false;
-   });
-
-   const delForm = document.querySelector('[name="deleteForm"]');
-
-   if (delForm) {
-    delForm.addEventListener('submit', () => {
+    pasteForm.addEventListener('submit', () => {
       changed = false;
     });
-   }
 
-   window.onbeforeunload = () => changed ? 'If you leave now, your paste will not be saved.' : undefined;
+    const delForm = document.querySelector('[name="deleteForm"]');
+
+    if (delForm) {
+      delForm.addEventListener('submit', () => {
+        changed = false;
+      });
+    }
+
+    window.onbeforeunload = () => changed ? 'If you leave now, your paste will not be saved.' : undefined;
   })();
 
   const autofocus = document.querySelector('[autofocus]:not(:focus)');
@@ -573,7 +621,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   // TODO: bootstrap 4?
   // https://getbootstrap.com/docs/4.5/components/tooltips/
   // oh hey this is cool http://thednp.github.io/bootstrap.native/
-  $('[title]:not([data-disable-tooltip])').tooltip({
+  const elementsToTooltip = document.querySelectorAll('[title]:not([data-disable-tooltip])');
+
+  Array.from(elementsToTooltip).map(
+    tip => new BSN.Tooltip(tip, {
+      placement: 'bottom', //string
+      animation: 'slideNfade', // CSS class
+      container: 'body',
+      delay: 250, // integer
+    })
+  );
+
+  /*$('[title]:not([data-disable-tooltip])').tooltip({
     trigger: "hover",
     placement: "bottom",
     container: "body",
@@ -581,7 +640,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       show: 250,
       hide: 50,
     },
-  });
+  });*/
   var pageLoadTime = Math.floor(new Date().getTime() / 1000);
   $('#expirationIcon').tooltip({
     trigger: "hover",
@@ -605,9 +664,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     },
   });
 });
-
-if (docCookies.hasItem("flash")) {
-  const flash = JSON.parse(atob(docCookies.getItem("flash")));
-  docCookies.removeItem("flash", "/");
-  Spectre.displayFlash(flash);
-}

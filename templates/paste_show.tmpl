@@ -8,20 +8,20 @@
 			{{if .Obj.Encrypted}}<i class="icon-lock" title="Encrypted"></i>{{end}}{{if pasteWillExpire .Obj}}<i class="icon-clock" data-reftime="{{now.UTC.Unix}}" data-value="{{.Obj.ExpirationTime.UTC.Unix}}" id="expirationIcon"></i>{{end}}
 		</span>
 	</span>
-	<div class="paste-toolbox-buttons pull-right" id="desktop-paste-control-container">
+	<div class="paste-toolbox-buttons float-right" id="desktop-paste-control-container">
 		<div id="paste-controls">
 			<div class="btn-group">
-				<a title="View Raw" href="{{pasteURL "raw" .Obj}}" class="btn btn-inverse">
+				<a title="View Raw" href="{{pasteURL "raw" .Obj}}" class="btn btn-dark">
 					<i class="icon-file-text icon-large"></i>
 					<span class="button-title">View Raw</span>
 				</a>
-				<a title="Download" href="{{pasteURL "download" .Obj}}" class="btn btn-inverse">
+				<a title="Download" href="{{pasteURL "download" .Obj}}" class="btn btn-dark">
 					<i class="icon-download icon-large"></i>
 					<span class="button-title">Download</span>
 				</a>
 			</div>
 			{{if not .Obj.Encrypted}}
-			<button title="Report" type="button" data-target="#reportModal" data-toggle="modal" class="btn btn-inverse">
+			<button title="Report" type="button" data-target="#reportModal" data-toggle="modal" class="btn btn-dark">
 				<i class="icon-flag icon-large"></i>
 				<span class="button-title">Report</span>
 			</button>
@@ -29,7 +29,7 @@
 		</div>
 		{{if editAllowed .}}
 		<div class="btn-group">
-			<button title="Grant" type="button" data-target="#grantModal" data-toggle="modal" class="btn btn-inverse">
+			<button title="Grant" type="button" data-target="#grantModal" data-toggle="modal" class="btn btn-dark">
 				<i class="icon-lemon icon-large"></i>
 			</button>
 

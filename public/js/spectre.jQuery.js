@@ -42,7 +42,7 @@ function onMediaQueryChanged (mediaQuery, callback) {
   const mql = window.matchMedia(mediaQuery);
   let lastMqlMatch;
 
-  mql.addEventListener('change', (e) => {
+  const listener = (e) => {
     if(e.matches === lastMqlMatch) {
       return;
     }
@@ -55,7 +55,10 @@ function onMediaQueryChanged (mediaQuery, callback) {
     });
 
     document.dispatchEvent(MQCEvent);
-  });
+  };
+
+  listener(mql);
+  mql.addEventListener('change', listener);
 }
 
 // used in _user.tmpl
@@ -99,6 +102,19 @@ document.addEventListener('DOMContentLoaded', () => {
 	document.querySelectorAll('*[data-placeholder]')
     .forEach((el) => el.dispatchEvent(changeEvent));
 });
+
+function findParentWithClass(el, cls) {
+  let target = el;
+
+  while (true) {
+    if (!target.classList.contains(cls)) {
+      target = target.parentNode;
+      continue;
+    }
+
+    return target;
+  }
+}
 
 function animateCSS(element, animation, prefix = 'animate__') {
   // We create a Promise and return it
