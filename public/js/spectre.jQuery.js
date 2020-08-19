@@ -58,17 +58,16 @@ function onMediaQueryChanged (mediaQuery, callback) {
   });
 }
 
-(function($){
-	"use strict";
-	$.fn.serializeObject = function() {
-		var self = this;
-		var object = {};
-		$.each($(self).serializeArray(), function(i, v) {
-			object[v["name"]] = v["value"];
-		});
-		return object;
-	};
-})(jQuery);
+// used in _user.tmpl
+function serializeForm (form) {
+  const out = {};
+
+  for (const input of form.querySelectorAll('input')) {
+    out[input.name] = input.value;
+  }
+
+  return out;
+}
 
 const theEvents = ['change', 'keydown', 'keypress', 'input'];
 
@@ -100,3 +99,23 @@ document.addEventListener('DOMContentLoaded', () => {
 	document.querySelectorAll('*[data-placeholder]')
     .forEach((el) => el.dispatchEvent(changeEvent));
 });
+
+function animateCSS(element, animation, prefix = 'animate__') {
+  // We create a Promise and return it
+  return new Promise((resolve, reject) => {
+    const animationName = `${prefix}${animation}`;
+    const node = typeof element === 'string' ? document.querySelector(element) : element;
+
+    node.classList.add(`${prefix}animated`, animationName);
+
+    // When the animation ends, we clean the classes and resolve the Promise
+    function handleAnimationEnd() {
+      node.classList.remove(`${prefix}animated`, animationName);
+      node.removeEventListener('animationend', handleAnimationEnd);
+
+      resolve('Animation ended');
+    }
+
+    node.addEventListener('animationend', handleAnimationEnd);
+  });
+}

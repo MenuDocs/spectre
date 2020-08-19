@@ -1,8 +1,7 @@
 (function (window) {
-  "use strict";
   window.Spectre = function () {
-    var _s2Languages;
-    var _languageMap;
+    let _s2Languages;
+    let _languageMap;
     return {
       formatDuration: function (seconds) {
         seconds = seconds | 0;
@@ -15,39 +14,38 @@
           return "" + ((seconds / 3600) | 0) + "h" + (((seconds % 3600) / 60) | 0) + "m" + ((seconds % 60) | 0) + "s";
         }
       },
-      loadLanguages: function () {
-        var s2Languages = {
+      loadLanguages: async function () {
+        const s2Languages = {
           more: false,
           results: [],
         };
-        var langmap = {};
-        $.ajax({
-          url: "/languages.json",
-          async: false,
-          dataType: "json",
-          cache: true,
-          success: function (_languages) {
-            $.each(_languages, function (i, cat) {
-              var s2cat = cat;
-              s2cat.text = cat.name;
-              s2cat.children = cat.languages;
-              $.each(cat.languages, function (i, lang) {
-                lang.text = lang.name;
+        const langmap = {};
 
-                langmap[lang.id] = lang;
-                if (lang.alt_ids) {
-                  $.each(lang.alt_ids, function (i, n) {
-                    langmap[n] = lang;
-                  });
-                }
+        const languages = await fetch('/languages.json', { cache: 'no-cache' })
+          .then((r) => r.json());
+
+        for (const cat of languages) {
+          for (const lang of cat.languages) {
+            lang.text = lang.name;
+
+            // TODO: find only needed props
+            langmap[lang.id] = lang;
+
+            if (lang.alt_ids) {
+              lang.alt_ids.forEach((alt) => {
+                langmap[alt] = lang;
               });
-              s2Languages.results.push(s2cat);
-            });
+            }
           }
-        });
+
+          s2Languages.results.push({
+            text: cat.name,
+            children: cat.languages
+          });
+        }
+
         _languageMap = langmap;
         _s2Languages = s2Languages;
-        return;
       },
       languagesForSelect2: function () {
         return _s2Languages;
@@ -84,15 +82,12 @@
         delete localStorage[k];
       },
       updatePartial: function (name) {
-        $.ajax({
-          type: "GET",
-          url: "/partial/" + name,
-          async: false,
-          dataType: "html",
-          success: function (reply) {
-            $("#partial_container_" + name).html(reply);
-          }
-        });
+        return fetch(`/partial/${name}`)
+          .then((r) => r.text())
+          .then((reply) => {
+            document.querySelector(`#partial_container_${name}`).innerHTML = reply;
+            return reply;
+          });
       },
       shouldRefreshPageOnLogin: function () {
         // Right now, only refresh for session (the only other page
@@ -100,7 +95,7 @@
         return (window.location.pathname.match(/session/) || []).length > 0;
       },
       refreshPage: function () {
-        window.location = window.location;
+        window.location.reload();
       },
       _loginReplyHandler: function (reply) {
         $("#partial_container_login_logout .blocker").fadeOut("fast");
@@ -156,41 +151,52 @@
         });
       },
       logout: function () {
-        $("#partial_container_login_logout .blocker").fadeIn("fast");
-        $.ajax({
-          type: "POST",
-          url: "/auth/logout",
-          async: true,
-          success: function () {
-            $("#partial_container_login_logout .blocker").fadeOut("fast");
-            if (!Spectre.shouldRefreshPageOnLogin()) {
-              Spectre.updatePartial("login_logout");
-              Spectre.displayFlash({type: "success", body: "Successfully logged out."});
-            } else {
+        const blocker = document.querySelector('#partial_container_login_logout .blocker');
+
+        blocker.classList.toggle('hide');
+        animateCSS(blocker, 'fadeIn');
+
+        fetch('/auth/logout', {
+          method: 'POST',
+          credentials: 'same-origin'
+        })
+          .then(async () => {
+            animateCSS(blocker, 'fadeOut').then(() => {
+              blocker.classList.toggle('hide');
+            });
+
+            if (Spectre.shouldRefreshPageOnLogin()) {
               Spectre.refreshPage();
+            } else {
+              await Spectre.updatePartial("login_logout");
+              Spectre.displayFlash({type: "success", body: "Successfully logged out."});
             }
-          },
-          failure: function (wat) {
-            $("#partial_container_login_logout .blocker").fadeOut("fast");
+          })
+          .catch((wat) => {
             alert(wat);
-          }
-        });
+          });
       },
       displayFlash: function (flash) {
-        var container = $("#flash-container");
-        var newFlash = container.find("#flash-template").clone();
-        newFlash.removeAttr('id').find('p').text(flash.body);
-        if (flash.type) {
-          newFlash.addClass('well-' + flash.type);
-        }
-        container.append(newFlash);
-        container.show();
+        const container = document.querySelector("#flash-container");
+        const newFlash = container.querySelector("#flash-template").cloneNode(true);
 
-        window.setTimeout(function () {
-          newFlash.fadeIn(200);
-          window.setTimeout(function () {
-            newFlash.fadeOut(400, function () {
-              container.hide();
+        newFlash.removeAttribute('id');
+        newFlash.querySelector('p').innerHTML = flash.body;
+
+        if (flash.type) {
+          newFlash.classList.add('well-' + flash.type);
+        }
+
+        container.appendChild(newFlash);
+        container.style.display = 'block';
+
+        setTimeout(() => {
+          newFlash.style.display = 'block';
+          animateCSS(newFlash, 'fadeIn');
+
+          setTimeout(() => {
+            animateCSS(newFlash, 'fadeOut').then(() => {
+              container.style.display = 'none';
               newFlash.remove();
             });
           }, 4000);
@@ -200,9 +206,7 @@
   }();
 })(window);
 
-$(function () {
-  "use strict";
-
+document.addEventListener('DOMContentLoaded', async () => {
   const codeEditor = document.querySelector('#code-editor');
   const code = document.querySelector('#code');
   const pasteForm = document.querySelector('#pasteForm');
@@ -216,7 +220,7 @@ $(function () {
     var langbox = pasteForm$.find("#langbox");
     var context = pasteForm$.data("context");
 
-    Spectre.loadLanguages();
+    await Spectre.loadLanguages();
 
     // TODO: find alternative
     // https://github.com/jshjohnson/Choices
@@ -522,7 +526,7 @@ $(function () {
         e.preventDefault();
 
         // submit form
-        pasteForm.submit();
+        pasteForm.requestSubmit();
         return;
       }
 

@@ -4,8 +4,8 @@
 <p>You are logged in.</p>
 <button type="button" id="logout" class="btn"><i class="icon icon-logout"> </i>Log Out</button>
 <script type="text/javascript">
-$("button#logout").on("click", function() {
-	Spectre.logout();
+document.querySelector('button#logout').addEventListener('click', () => {
+  Spectre.logout();
 });
 </script>
 {{else}}
@@ -39,10 +39,13 @@ retained as part of your user account. Promise.</small></p>
 	</form>
 </div>
 <script type="text/javascript">
-$("form#loginForm").on('submit', function(event) {
-	Spectre.login($(this).serializeObject());
-	event.preventDefault();
-	event.stopPropagation();
+const form = document.querySelector('form#loginForm');
+
+form.addEventListener('submit', (event) => {
+  Spectre.login(serializeForm(form));
+
+  event.preventDefault();
+  event.stopPropagation();
 });
 </script>
 {{end}}
