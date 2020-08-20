@@ -91,6 +91,17 @@
 	</div>
 </div>
 <script>
+const newGrantButton = document.querySelector('#newGrantButton');
+const grantError = document.querySelector('div#grantError');
+
+newGrantButton.addEventListener('click', () => {
+    fetch('{{pasteURL "grant" .Obj}}', { method: 'POST' })
+    .then()
+    .catch(() => {
+        grantError.style.display = 'block';
+    });
+});
+
 $("#newGrantButton").on("click", function() {
 	$.ajax({
 		"method": "POST",

@@ -1,7 +1,7 @@
 (function (window) {
   window.Spectre = function () {
     let _s2Languages;
-    let _languageMap;
+    let _languageMap = {};
     return {
       formatDuration: function (seconds) {
         seconds = seconds | 0;
@@ -15,10 +15,7 @@
         }
       },
       loadLanguages: async function () {
-        const s2Languages = {
-          more: false,
-          results: [],
-        };
+        const s2Languages = [];
         const langmap = {};
 
         const languages = await fetch('/languages.json', {cache: 'no-cache'})
@@ -26,8 +23,6 @@
 
         for (const cat of languages) {
           for (const lang of cat.languages) {
-            lang.text = lang.name;
-
             // TODO: find only needed props
             langmap[lang.id] = lang;
 
@@ -38,9 +33,9 @@
             }
           }
 
-          s2Languages.results.push({
-            text: cat.name,
-            children: cat.languages
+          s2Languages.push({
+            label: cat.name,
+            choices: cat.languages
           });
         }
 
@@ -259,37 +254,32 @@ document.addEventListener('DOMContentLoaded', async () => {
   const code = document.querySelector('#code');
   const pasteForm = document.querySelector('#pasteForm');
 
-  var pasteForm$ = $("#pasteForm");
-
-  // TODO
   if (pasteForm) {
-    // Initialize the form.
-    var langbox = pasteForm$.find("#langbox");
     const context = pasteForm.dataset.context;
+    const langbox = document.getElementById('choices-multiple-groups');
 
-    await Spectre.loadLanguages();
 
-    // TODO: find alternative
-    // https://github.com/jshjohnson/Choices
-    langbox.select2({
-      data: Spectre.languagesForSelect2(),
-      matcher: function (term, text, lang) {
-        // The ifs here are blown apart so that we might short-circuit.
-        if (!lang.id) return false;
-        if (lang.name.toUpperCase().indexOf(('' + term).toUpperCase()) >= 0) return true;
-        if (lang.id.toUpperCase().indexOf(('' + term).toUpperCase()) >= 0) return true;
-        for (var i in lang.alt_ids) {
-          if (lang.alt_ids[i].toUpperCase().indexOf(('' + term).toUpperCase()) >= 0) return true;
-        }
-        return false;
-      },
+    const choices = new Choices(langbox, {
+      placeholder: true,
+      shouldSort: false,
     });
-    var lang = Spectre.languageNamed(langbox.data("selected")) || Spectre.defaultLanguage() || Spectre.languageNamed("text");
 
-    langbox.select2("data", lang);
+    const langLoader = async () => {
+      await Spectre.loadLanguages();
 
-    if (context === "new") {
-      pasteForm.querySelector("input[name='expire']").value = Spectre.defaultExpiration();
+      return Spectre.languagesForSelect2();
+    };
+
+    choices.setChoices(langLoader, 'id', 'name', true).then(() => {
+      const lang = Spectre.languageNamed(langbox.dataset.selected) || Spectre.defaultLanguage() || Spectre.languageNamed("text");
+
+      choices.setChoiceByValue(lang.id);
+    });
+
+    // https://github.com/jshjohnson/Choices
+
+    if (context === 'new') {
+      pasteForm.querySelector('input[name="expire"]').value = Spectre.defaultExpiration();
 
 
       const optionsModal = document.querySelector('#optionsModal');
@@ -303,42 +293,55 @@ document.addEventListener('DOMContentLoaded', async () => {
       Array.from(
         optionsModal.querySelectorAll('input[type="checkbox"]')
       ).forEach((cb) => {
-        cb.checked = Spectre.getPreference(cb.dataset.gbKey, "false") === "true";
+        cb.checked = Spectre.getPreference(cb.dataset.gbKey, 'false') === 'true';
 
         cb.addEventListener('change', (e) => {
           const el = e.target;
 
-          Spectre.setPreference(el.dataset.gbKey, el.checked ? "true" : "false");
+          Spectre.setPreference(el.dataset.gbKey, el.checked ? 'true' : 'false');
         });
+      });
+    }
+
+    const deleteModal = document.querySelector('#deleteModal')
+
+    if (deleteModal) {
+      const deleteModalButton = document.querySelector('#deleteModalButton')
+      const modalInstance = new BSN.Modal(deleteModal, { keyboard: true, backdrop: false });
+
+      deleteModalButton.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        modalInstance.show();
       });
     }
 
     pasteForm.addEventListener('submit', (e) => {
       if (!(codeEditor.value.match(/[^\s]/) || []).length) {
         e.preventDefault();
-        const emptyOrDeleteModal = document.querySelector('#deleteModal, #emptyPasteModal');
-        const modalInstance = new BSN.Modal(emptyOrDeleteModal, { keyboard: true, backdrop: false });
+        const emptyModal = document.querySelector('#emptyPasteModal');
+        const modalInstance = new BSN.Modal(emptyModal, { keyboard: true, backdrop: false });
 
         modalInstance.show();
 
         return;
       }
 
-      if (context === "new") {
-        if (Spectre.getPreference("saveExpiration", "false") === "true") {
-          Spectre.setDefaultExpiration(pasteForm$.find("input[name='expire']").val());
+      if (context === 'new') {
+        if (Spectre.getPreference('saveExpiration', 'false') === 'true') {
+          Spectre.setDefaultExpiration(pasteForm.querySelector('input[name="expire"]').value);
         } else {
           Spectre.clearDefaultExpiration();
         }
 
-        if (Spectre.getPreference("saveLanguage", "false") === "true") {
-          Spectre.setDefaultLanguage(langbox.select2("data"));
+        if (Spectre.getPreference('saveLanguage', 'false') === 'true') {
+          Spectre.setDefaultLanguage(langbox.value);
         } else {
           Spectre.clearDefaultLanguage();
         }
       }
 
-      pasteForm.querySelector("input[name='title']").value = document.querySelector("#editable-paste-title").innerText;
+      pasteForm.querySelector('input[name="title"]').value = document.querySelector('#editable-paste-title').innerText;
     });
 
     /*pasteForm$.on('submit', function () {

@@ -99,7 +99,7 @@ listenForEvents(theEvents, document, (event) => {
 document.addEventListener('DOMContentLoaded', () => {
 	const changeEvent = new CustomEvent('change');
 
-	document.querySelectorAll('*[data-placeholder]')
+  document.querySelectorAll('*[data-placeholder]')
     .forEach((el) => el.dispatchEvent(changeEvent));
 });
 
