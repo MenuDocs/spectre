@@ -190,7 +190,7 @@
       logout: function () {
         const blocker = document.querySelector('#partial_container_login_logout .blocker');
 
-        blocker.classList.toggle('hide');
+        blocker.style.display = 'block';
         animateCSS(blocker, 'fadeIn');
 
         fetch('/auth/logout', {
@@ -199,7 +199,7 @@
         })
           .then(async () => {
             animateCSS(blocker, 'fadeOut').then(() => {
-              blocker.classList.toggle('hide');
+              blocker.style.display = 'none';
             });
 
             if (Spectre.shouldRefreshPageOnLogin()) {

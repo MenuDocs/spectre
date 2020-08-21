@@ -45,83 +45,90 @@
 {{end}}
 <div class="code{{if .Obj.Language.DisplayStyle}} code-{{.Obj.Language.DisplayStyle}}{{end}}" id="code">{{render .Obj}}</div>
 <div class="well visible-phone d-block d-sm-block d-md-none unselectable" id="phone-paste-control-container"></div>
-<div id="reportModal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
-        <form name="reportForm" action="{{pasteURL "report" .Obj}}" method="post">
-        <div class="modal-header">
-            <h3 class="modal-title">Report Paste</h3>
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                <span aria-hidden="true">&times;</span>
-            </button>
+<div id="reportModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <form name="reportForm" action="{{pasteURL "report" .Obj}}" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title">Report Paste</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                <p>For what reason do you wish to report {{with .Obj.Title}}<strong>{{.}}</strong>{{else}}paste <strong>{{.Obj.ID}}</strong>{{end}}?</p>
+                <p><select name="reason">
+                    <option value="personal">Personal Information</option>
+                    <option value="spam">Spam</option>
+                </select></p>
+                </div>
+
+                <div class="modal-footer">
+                <button type="submit" class="btn btn-sm btn-danger">Report Paste</button>
+                <button data-dismiss="modal" class="btn btn-light" aria-hidden="true">Nevermind</button>
+            </div>
+        </form>
         </div>
-        <div class="modal-body">
-		<p>For what reason do you wish to report {{with .Obj.Title}}<strong>{{.}}</strong>{{else}}paste <strong>{{.Obj.ID}}</strong>{{end}}?</p>
-		<p><select name="reason">
-			<option value="personal">Personal Information</option>
-			<option value="spam">Spam</option>
-		</select></p>
-		</div>
-		<div class="modal-footer">
-		<button type="submit" class="btn btn-sm btn-danger">Report Paste</button>
-		<button data-dismiss="modal" class="btn btn-light" aria-hidden="true">Nevermind</button>
-	</div>
-	</form>
+    </div>
 </div>
-<div id="grantModal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
-	<form name="grantForm" action="{{pasteURL "grant" .Obj}}" method="get">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-		<h3>Grant Edit Permission</h3>
-	</div>
-	<div class="modal-body">
-		<p>Are you sure you want to grant permission to another user to edit {{with .Obj.Title}}<strong>{{.}}</strong>{{else}}paste <strong>{{.Obj.ID}}</strong>{{end}}?</p>
-		<p>This is not reversible. Grant links will be valid for 48 hours.</p>
-		<div class="grant-tutorial">
-			<p>Send the following URLs (one per intended editor) to collaborators for redemption.</p>
-		</div>
-		<div style="display: none;" id="grant-item-template" class="grant-item input-prepend">
-			<span class="add-on"><i class="icon-lemon"></i></span>
-			<input type="text"></input>
-		</div>
-		<div id="grantContainer" class="grant-container"></div>
-		<div id="grantError" class="error" style="display:none;">There was an error generating a new grant.</div>
-		<button type="button" id="newGrantButton" class="btn btn-light">Generate Grant</button>
-	</div>
-	<div class="modal-footer">
-		<button data-dismiss="modal" class="btn btn-light" aria-hidden="true" id="cancelGranting">Nevermind</button>
-	</div>
+<div id="grantModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form name="grantForm" action="{{pasteURL "grant" .Obj}}" method="get">
+                <div class="modal-header">
+                    <h5 class="modal-title">Grant Edit Permission</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                </div>
+
+                <div class="modal-body">
+                    <p>Are you sure you want to grant permission to another user to edit {{with .Obj.Title}}<strong>{{.}}</strong>{{else}}paste <strong>{{.Obj.ID}}</strong>{{end}}?</p>
+                    <p>This is not reversible. Grant links will be valid for 48 hours.</p>
+                    <div class="grant-tutorial">
+                        <p>Send the following URLs (one per intended editor) to collaborators for redemption.</p>
+                    </div>
+                    <div style="display: none;" id="grant-item-template" class="grant-item input-prepend">
+                        <span class="add-on"><i class="icon-lemon"></i></span>
+                        <input type="text"></input>
+                    </div>
+                    <div id="grantContainer" class="grant-container"></div>
+                    <div id="grantError" class="error" style="display:none;">There was an error generating a new grant.</div>
+                    <button type="button" id="newGrantButton" class="btn btn-light">Generate Grant</button>
+                </div>
+
+                <div class="modal-footer">
+                    <button data-dismiss="modal" class="btn btn-light" aria-hidden="true" id="cancelGranting">Nevermind</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 <script>
 const newGrantButton = document.querySelector('#newGrantButton');
 const grantError = document.querySelector('div#grantError');
 
 newGrantButton.addEventListener('click', () => {
-    fetch('{{pasteURL "grant" .Obj}}', { method: 'POST' })
-    .then()
-    .catch(() => {
+    fetch('{{pasteURL "grant" .Obj}}', { method: 'POST', credentials: 'same-origin' })
+    .then((r) => r.json())
+    .then((j) => {
+        const newItem = document.querySelector('#grant-item-template').cloneNode(true);
+
+        newItem.removeAttribute('id');
+        newItem.style.display = 'block';
+        newItem.querySelector('input').value = j.acceptURL;
+
+        document.querySelector('div#grantContainer').append(newItem);
+        document.querySelector('button#cancelGranting').innerHTML = 'I\'m Done.';
+        document.querySelectorAll('div.grant-tutorial').forEach((el) => {
+            el.style.display = 'block';
+        });
+        grantError.style.display = 'none';
+    })
+    .catch((e) => {
         grantError.style.display = 'block';
+        console.log(e);
     });
-});
-
-$("#newGrantButton").on("click", function() {
-	$.ajax({
-		"method": "POST",
-		"data": null,
-		"url": "{{pasteURL "grant" .Obj}}",
-		"success": function(e) {
-			var template = $("#grant-item-template");
-			var newItem = template.clone();
-			newItem.attr("id", "").show().find("input").val(e.acceptURL);
-			$("div#grantContainer").append(newItem);
-
-			$("div.grant-tutorial").show();
-			$("button#cancelGranting").text("I'm Done.");
-			$("div#grantError").hide();
-		},
-		"error": function(e) {
-			$("div#grantError").show();
-		},
-		"timeout": 2000, // 2 seconds
-	});
 });
 </script>
 {{end}}
