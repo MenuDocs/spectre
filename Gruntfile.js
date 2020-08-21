@@ -37,6 +37,13 @@ module.exports = function(grunt) {
 		clean: {
 			build: ['build', '.tmp'],
 		},
+    uglify: {
+      options: {
+        compress: {
+          drop_console: true
+        }
+      },
+    },
 		useminPrepare: {
 			html: 'templates/_lib.tmpl',
 			options: {
