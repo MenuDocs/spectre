@@ -344,28 +344,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       pasteForm.querySelector('input[name="title"]').value = document.querySelector('#editable-paste-title').innerText;
     });
 
-    /*pasteForm$.on('submit', function () {
-      if ((codeeditor$.val().match(/[^\s]/) || []).length !== 0) {
-        if (context === "new") {
-          if (Spectre.getPreference("saveExpiration", "false") === "true") {
-            Spectre.setDefaultExpiration(pasteForm$.find("input[name='expire']").val());
-          } else {
-            Spectre.clearDefaultExpiration();
-          }
-
-          if (Spectre.getPreference("saveLanguage", "false") === "true") {
-            Spectre.setDefaultLanguage(langbox.select2("data"));
-          } else {
-            Spectre.clearDefaultLanguage();
-          }
-        }
-        pasteForm$.find("input[name='title']").val($("#editable-paste-title").text())
-      } else {
-        $("#deleteModal, #emptyPasteModal").modal("show");
-        return false;
-      }
-    });
-*/
     document.querySelector('#editable-paste-title')
       .addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
