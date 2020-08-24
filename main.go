@@ -634,7 +634,7 @@ var userStore account.AccountStore
 var pasteRouter *mux.Router
 var router *mux.Router
 var healthServer *HealthServer
-var apiPaste *Paste
+var staticPastes map[string]*Paste
 
 type args struct {
 	root, addr string
@@ -658,8 +658,8 @@ func (a *args) parse() {
 	})
 }
 
-func createApiPaste() {
-	apiPaste = &Paste{
+func createStaticPastes() {
+    staticPastes["api"] = &Paste{
 		ID: "api_docs.paste",
 		Language: &Language{
 			Name:                "Markdown",
@@ -683,8 +683,8 @@ func createApiPaste() {
 	}
 }
 
-func getApiPaste(r *http.Request) (Model, error) {
-	return apiPaste, nil
+func getStaticPaste(r *http.Request) (Model, error) {
+	return staticPastes[strings.Replace(r.URL.Path, "/", "", 1)], nil
 }
 
 var arguments = &args{}
@@ -793,6 +793,8 @@ func init() {
 	os.Mkdir(statiPasteDir, 0700)
 	staticPasteStore = NewFilesystemPasteStore(statiPasteDir)
 
+	staticPastes = make(map[string]*Paste)
+
 	pasteExpirator = gotimeout.NewExpirator(filepath.Join(arguments.root, "expiry.gob"), &ExpiringPasteStore{pasteStore})
 	ephStore = gotimeout.NewMap()
 
@@ -808,7 +810,7 @@ func init() {
 		},
 	}
 
-	createApiPaste()
+	createStaticPastes()
 
 	fmt.Println("Ghostbin ready")
 }
@@ -994,7 +996,7 @@ func main() {
 
 	router.Methods("GET").
 		Path("/api").
-		Handler(RequiredModelObjectHandler(getApiPaste, RenderPageForModel("paste_show_static")))
+		Handler(RequiredModelObjectHandler(getStaticPaste, RenderPageForModel("paste_show_static")))
 
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("public")))
 

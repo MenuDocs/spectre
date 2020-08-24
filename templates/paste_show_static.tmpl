@@ -6,28 +6,7 @@
 		<strong>{{with .Obj.Title}}{{.}}{{else}}Paste {{.Obj.ID}}{{end}}</strong>
 		<span class="paste-subtitle">{{.Obj.Language.Name}}</span>
 	</span>
-	<div class="paste-toolbox-buttons float-right" id="desktop-paste-control-container">
-		<div id="paste-controls">
-			<div class="btn-group">
-				<a title="View Raw" href="{{pasteURL "raw" .Obj}}" class="btn btn-dark">
-					<i class="icon-file-text icon-large"></i>
-					<span class="button-title">View Raw</span>
-				</a>
-				<a title="Download" href="{{pasteURL "download" .Obj}}" class="btn btn-dark">
-					<i class="icon-download icon-large"></i>
-					<span class="button-title">Download</span>
-				</a>
-			</div>
-
-			<button title="Report" type="button" class="btn btn-dark" disabled data-comment="Only here because of a css tooltip issue - duncte123">
-				<i class="icon-flag icon-large"></i>
-				<span class="button-title">Report</span>
-			</button>
-		</div>
-	</div>
 </div>
 {{if not .Obj.Language.SuppressLineNumbers}}<div class="code code-line-numbers unselectable" id="line-numbers" aria-hidden="true"></div>{{end}}
 <div class="code{{if .Obj.Language.DisplayStyle}} code-{{.Obj.Language.DisplayStyle}}{{end}}" id="code">{{render .Obj}}</div>
-<div class="well visible-phone d-block d-sm-block d-md-none unselectable" id="phone-paste-control-container"></div>
-
 {{end}}
