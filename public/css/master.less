@@ -44,62 +44,62 @@
 @paste-title-font-features: 'calt' 1, 'case' 1, 'ss01' 1, 'ss02' 1;
 
 html {
-	font-family: 'Inter UI', sans-serif;
-	font-feature-settings: 'calt' 1, 'case' 1;
+    font-family: 'Inter UI', sans-serif;
+    font-feature-settings: 'calt' 1, 'case' 1;
 }
 
 @supports (font-variation-settings: normal) {
-	html {
-		font-family: 'Inter UI var alt', sans-serif;
-	}
+    html {
+        font-family: 'Inter UI var alt', sans-serif;
+    }
 }
 
 // Suppress default styling on Firefox for Android
 button, button:active, textarea, textarea:focus, input, input:focus {
-	background-image: none;
+    background-image: none;
 }
 
 .box-sizing (@box) {
-	-webkit-box-sizing: @box;
-	-moz-box-sizing: @box;
-	box-sizing: @box;
+    -webkit-box-sizing: @box;
+    -moz-box-sizing: @box;
+    box-sizing: @box;
 }
 
 html, body {
-	height: 100%;
-	margin: 0px;
-	padding: 0px;
-	@media @media-phone {
-		height: auto;
-	}
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    @media @media-phone {
+        height: auto;
+    }
 }
 
 body {
-	min-height: 100%;
-	background-color: @paste-background;
-	color: @paste-text-color;
-	position: relative;
-	@media @media-phone {
-		min-height: 0;
-	}
+    min-height: 100%;
+    background-color: @paste-background;
+    color: @paste-text-color;
+    position: relative;
+    @media @media-phone {
+        min-height: 0;
+    }
 }
 
 p {
-	// From bootstrap, line height / 2
-	margin: 0 0 10px;
+    // From bootstrap, line height / 2
+    margin: 0 0 10px;
 }
 
 h1, h2, h3, h4, h5, h6 {
     &:not(.modal-title) {
         margin: 10px 0;
-    	line-height: 20px;
-    	text-rendering: optimizelegibility; // Fix the character spacing for headings
+        line-height: 20px;
+        text-rendering: optimizelegibility; // Fix the character spacing for headings
     }
 }
 
 ul, ol {
-	padding: 0;
-	margin: 0 0 10px 25px;
+    padding: 0;
+    margin: 0 0 10px 25px;
 }
 
 .hide {
@@ -107,384 +107,403 @@ ul, ol {
 }
 
 .modal {
-	color: black;
+    color: black;
 }
 
 .nowrap {
-	white-space: nowrap;
+    white-space: nowrap;
 }
 
 .error {
-	color: #b94a48;
-}	
+    color: #b94a48;
+}
 
 .info {
-	color: #484ab9;
-}	
+    color: #484ab9;
+}
 
-textarea { min-height: 2em; resize: vertical; }
+textarea {
+    min-height: 2em;
+    resize: vertical;
+}
 
 input[type=password] {
-	margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 [class^="icon-"]:before, [class*=" icon-"]:before {
-	-moz-osx-font-smoothing: grayscale;
-	-webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
 }
 
 .input-prepend {
-	color: rgb(51, 51, 51);
-	margin-bottom: 0px;
+    color: rgb(51, 51, 51);
+    margin-bottom: 0px;
 }
 
 .sizefix {
-	width: 100%;
-	min-height: 100%;
-	position: relative;
-	@media @media-phone {
-		min-height: 0;
-	}
+    width: 100%;
+    min-height: 100%;
+    position: relative;
+    @media @media-phone {
+        min-height: 0;
+    }
 }
 
 .paste-miniature {
-	min-height: 0;
-	margin: 0px 0px 5px;
-	border-radius: 4px;
-	border: 1px solid @minor-highlight-border;
-	.code {
-		font-size: 8pt;
-		padding: 4px;
-	}
+    min-height: 0;
+    margin: 0px 0px 5px;
+    border-radius: 4px;
+    border: 1px solid @minor-highlight-border;
+
+    .code {
+        font-size: 8pt;
+        padding: 4px;
+    }
 }
 
 .code, code {
-	font-family: 'EnvyCodeRWeb', 'monospace';
-	-moz-osx-font-smoothing: grayscale;
-	-webkit-font-smoothing: antialiased;
-	font-size: @paste-font-size;
-	line-height: @paste-line-height;
-	-webkit-overflow-scrolling: touch;
-	@media @media-phone {
-		font-size: @paste-font-size-mobile;
-		line-height: @paste-line-height-mobile;
-	}
+    font-family: 'EnvyCodeRWeb', 'monospace';
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-size: @paste-font-size;
+    line-height: @paste-line-height;
+    -webkit-overflow-scrolling: touch;
+    @media @media-phone {
+        font-size: @paste-font-size-mobile;
+        line-height: @paste-line-height-mobile;
+    }
 }
 
 code.ghost {
-	white-space: pre;
-	display: block;
+    white-space: pre;
+    display: block;
 }
 
 .code {
-	white-space: pre;
-	padding: @paste-content-padding;
-	.box-sizing(border-box);
+    white-space: pre;
+    padding: @paste-content-padding;
+    .box-sizing(border-box);
 
-	// This is to keep the code above the line bar.
-	position: relative;
-	z-index: 2;
+    // This is to keep the code above the line bar.
+    position: relative;
+    z-index: 2;
 
-	&.code-line-numbers {
-		color: @line-numbers;
-		width: auto;
-		text-align: right;
-		padding-right: 0;
-		padding-left: 0;
-		font-size: 8pt;
-		line-height: @paste-line-height;
-		float: left;
-		border-right: 1px solid @line-number-bar;
-		speak: none;
-		cursor: pointer;
-		@media @media-phone {
-			line-height: @paste-line-height-mobile;
-		}
-		@media print {
-			display: none;
-		}
-		span {
-			padding: 0 4px;
-			margin: 0;
-			.box-sizing(border-box);
-			display: block;
-			&:hover {
-				color: @line-numbers-hover;
-			}
-		}
-	}
+    &.code-line-numbers {
+        color: @line-numbers;
+        width: auto;
+        text-align: right;
+        padding-right: 0;
+        padding-left: 0;
+        font-size: 8pt;
+        line-height: @paste-line-height;
+        float: left;
+        border-right: 1px solid @line-number-bar;
+        speak: none;
+        cursor: pointer;
+        @media @media-phone {
+            line-height: @paste-line-height-mobile;
+        }
+        @media print {
+            display: none;
+        }
+
+        span {
+            padding: 0 4px;
+            margin: 0;
+            .box-sizing(border-box);
+            display: block;
+
+            &:hover {
+                color: @line-numbers-hover;
+            }
+        }
+    }
 }
 
 div.code {
-	overflow-x: auto;
-	text-overflow: clip;
+    overflow-x: auto;
+    text-overflow: clip;
 }
 
 textarea.code {
-	word-wrap: normal;
-	overflow-x: auto;
-	overflow-y: hidden;
-	/* Fix the text field's appearance */
-	background-color: inherit;
-	color: inherit;
-	border: none;
-	margin-bottom: 0px;
-	width: 100%;
+    word-wrap: normal;
+    overflow-x: auto;
+    overflow-y: hidden;
+    /* Fix the text field's appearance */
+    background-color: inherit;
+    color: inherit;
+    border: none;
+    margin-bottom: 0px;
+    width: 100%;
 
-	outline: none !important;
-	box-shadow: none;
-	-webkit-appearance: none;
-	&:focus {
-		outline: none !important;
-		box-shadow: none;
-		-webkit-appearance: none;
-	}
+    outline: none !important;
+    box-shadow: none;
+    -webkit-appearance: none;
+
+    &:focus {
+        outline: none !important;
+        box-shadow: none;
+        -webkit-appearance: none;
+    }
 }
 
 .textarea-height-wrapper {
-	display: block;
-	position: absolute;
-	left: 0;
-	right: 0;
-	top: @toolbox-height;
-	bottom: 0;
-	textarea {
-		display: block;
-		width: 100%;
-		height: 100%;
-		.box-sizing(border-box);
-	}
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: @toolbox-height;
+    bottom: 0;
+
+    textarea {
+        display: block;
+        width: 100%;
+        height: 100%;
+        .box-sizing(border-box);
+    }
 }
 
 .code-markdown {
-	font-family: inherit;
-	white-space: normal;
-	code {
-		display: inline;
-		padding: 0;
-		margin: 0;
-	}
+    font-family: inherit;
+    white-space: normal;
+
+    code {
+        display: inline;
+        padding: 0;
+        margin: 0;
+    }
 }
 
 .line-highlight-bar {
-	clear: none;
-	display: block;
-	background-color: @minor-highlight;
-	right: 0;
-	bottom: 0;
-	top: 0;
-	left: 0;
-	position: absolute;
-	height: @paste-line-height;
-	line-height: @paste-line-height;
+    clear: none;
+    display: block;
+    background-color: @minor-highlight;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    position: absolute;
+    height: @paste-line-height;
+    line-height: @paste-line-height;
 
-	// Below the code.
-	z-index: 1;
+    // Below the code.
+    z-index: 1;
 
-	.box-sizing(border-box);
+    .box-sizing(border-box);
 
-	@media @media-phone {
-		height: @paste-line-height-mobile;
-		line-height: @paste-line-height-mobile;
-	}
+    @media @media-phone {
+        height: @paste-line-height-mobile;
+        line-height: @paste-line-height-mobile;
+    }
 
-	&.line-highlight-bar-permanent {
-		background-color: @major-highlight;
-		border-top: 1px solid @major-highlight-border;
-		border-bottom: 1px solid @major-highlight-border;
-	}
+    &.line-highlight-bar-permanent {
+        background-color: @major-highlight;
+        border-top: 1px solid @major-highlight-border;
+        border-bottom: 1px solid @major-highlight-border;
+    }
 
 }
 
 ul.paste-list, ul.report-list {
-	list-style: none;
-	padding: @paste-content-padding;
-	margin: 0;
-	&.selectable {
-		& > li {
-			&:hover {
-				background-color: @minor-highlight;
-			}
-		}
-	}
-	& > li {
-		padding: 4px;
-		form {
-			display: inline;
-		}
+    list-style: none;
+    padding: @paste-content-padding;
+    margin: 0;
 
-		a, button.btn-link {
-			padding: 0px 0px 0px 0px;
-			text-shadow: none;
-			display: inline;
-			text-decoration: none;
-			color: @paste-title-color;
-			font-size: @paste-title-font-size;
-			vertical-align: middle;
-			&:hover, &:active, &:focus {
-				color: @paste-subtitle-color;
-			}
-		}
-	}
+    &.selectable {
+        & > li {
+            &:hover {
+                background-color: @minor-highlight;
+            }
+        }
+    }
+
+    & > li {
+        padding: 4px;
+
+        form {
+            display: inline;
+        }
+
+        a, button.btn-link {
+            padding: 0px 0px 0px 0px;
+            text-shadow: none;
+            display: inline;
+            text-decoration: none;
+            color: @paste-title-color;
+            font-size: @paste-title-font-size;
+            vertical-align: middle;
+
+            &:hover, &:active, &:focus {
+                color: @paste-subtitle-color;
+            }
+        }
+    }
 }
 
 ul.report-list {
-	.report-buttons {
-		.btn {
-			padding-top: 2px;
-			padding-bottom: 2px;
-			display: block;
-		}
-		float: left;
-		width: 32px;
-	}
-	.report-contents {
-		margin-left: 34px;
-		.well {
-			margin: 4px 0 0 0;
-		}
-		.paste-miniature {
-			padding: 4px;
-		}
-	}
+    .report-buttons {
+        .btn {
+            padding-top: 2px;
+            padding-bottom: 2px;
+            display: block;
+        }
+
+        float: left;
+        width: 32px;
+    }
+
+    .report-contents {
+        margin-left: 34px;
+
+        .well {
+            margin: 4px 0 0 0;
+        }
+
+        .paste-miniature {
+            padding: 4px;
+        }
+    }
 }
 
 div.paste-toolbox {
-	background-color: @toolbox-background;
-	padding: 6px;
-	@media @media-tablet {
-		height: @toolbox-height;
-		.box-sizing(border-box);
-	}
-	@media print {
-		display: none;
-	}
+    background-color: @toolbox-background;
+    padding: 6px;
+    @media @media-tablet {
+        height: @toolbox-height;
+        .box-sizing(border-box);
+    }
+    @media print {
+        display: none;
+    }
 }
 
 div.announcement {
-	background-color: @warning-background;
-	padding: 6px;
-	@media @media-tablet {
-		.box-sizing(border-box);
-	}
-	@media print {
-		display: none;
-	}
+    background-color: @warning-background;
+    padding: 6px;
+    @media @media-tablet {
+        .box-sizing(border-box);
+    }
+    @media print {
+        display: none;
+    }
 
-	span {
-		font-size: @paste-subtitle-font-size;
-		line-height: 1em;
-		vertical-align: middle;
-	}
+    span {
+        font-size: @paste-subtitle-font-size;
+        line-height: 1em;
+        vertical-align: middle;
+    }
 }
 
 [data-placeholder]:not(:focus):not([data-div-placeholder-content]):before {
-	content: attr(data-placeholder);
+    content: attr(data-placeholder);
 }
 
 span.paste-title {
-	position: relative;
-	font-size: @paste-title-font-size;
-	font-feature-settings: @paste-title-font-features;
-	color: @paste-title-color;
-	vertical-align: middle;
-	@media @media-phone {
-		font-size: (@paste-title-font-size - 2pt);
-		display: inline-block;
-		line-height: 1em;
-		margin-top: -4px;
-	}
+    position: relative;
+    font-size: @paste-title-font-size;
+    font-feature-settings: @paste-title-font-features;
+    color: @paste-title-color;
+    vertical-align: middle;
+    @media @media-phone {
+        font-size: (@paste-title-font-size - 2pt);
+        display: inline-block;
+        line-height: 1em;
+        margin-top: -4px;
+    }
 
-	.paste-subtitle {
-		font-size: @paste-subtitle-font-size;
-		color: @paste-subtitle-color;
-		@media @media-phone {
-			line-height: 1em;
-			font-size: (@paste-subtitle-font-size - 2pt);
-			margin-top: .2em;
-			display: block;
-		}
-	}
+    .paste-subtitle {
+        font-size: @paste-subtitle-font-size;
+        color: @paste-subtitle-color;
+        @media @media-phone {
+            line-height: 1em;
+            font-size: (@paste-subtitle-font-size - 2pt);
+            margin-top: .2em;
+            display: block;
+        }
+    }
 }
 
 .content {
-	margin: 0px 2em;
-	padding: @paste-content-padding;
-	color: @paste-title-color;
-	.signature {
-		text-align: right;
-		color: @paste-subtitle-color;
-	}
+    margin: 0px 2em;
+    padding: @paste-content-padding;
+    color: @paste-title-color;
+
+    .signature {
+        text-align: right;
+        color: @paste-subtitle-color;
+    }
 }
 
 .well {
-	margin: 10px;
-	min-height: 20px;
-	padding: 15px;
-	border-radius: 4px;
-	color: @paste-text-color;
+    margin: 10px;
+    min-height: 20px;
+    padding: 15px;
+    border-radius: 4px;
+    color: @paste-text-color;
 
-	@media @media-phone {
-		margin: 0;
-	}
+    @media @media-phone {
+        margin: 0;
+    }
 
-	.well-title {
-		font-size: 125%;
-	}
+    .well-title {
+        font-size: 125%;
+    }
 
-	border: 1px solid @minor-highlight-border;
-	background-color: @minor-highlight;
-	&.well-error {
-		border-color: @error-highlight-border;
-		background-color: @error-highlight;
-	}
+    border: 1px solid @minor-highlight-border;
+    background-color: @minor-highlight;
 
-	&.well-success {
-		border-color: @success-highlight-border;
-		background-color: @success-highlight;
-	}
+    &.well-error {
+        border-color: @error-highlight-border;
+        background-color: @error-highlight;
+    }
+
+    &.well-success {
+        border-color: @success-highlight-border;
+        background-color: @success-highlight;
+    }
 
 
-	hr {
-		margin: 6px 0px 6px 0px;
-		border: 0;
-		background-color: @paste-text-color;
-		color: @paste-text-color;
-		height: 1px;
-	}
+    hr {
+        margin: 6px 0px 6px 0px;
+        border: 0;
+        background-color: @paste-text-color;
+        color: @paste-text-color;
+        height: 1px;
+    }
 }
 
 .modal-body .well {
-	border: 1px solid #E3E3E3;
-	background-color: #F5F5F5;
-	color: black;
+    border: 1px solid #E3E3E3;
+    background-color: #F5F5F5;
+    color: black;
 
-	hr {
-		background-color: #bbb;
-		color: #bbb;
-	}
+    hr {
+        background-color: #bbb;
+        color: #bbb;
+    }
 }
 
 .control-group {
-	margin-top: 2px;
-	margin-bottom: 2px;
+    margin-top: 2px;
+    margin-bottom: 2px;
 }
 
 form {
-	margin-bottom: 0;
-	height: 100%;
+    margin-bottom: 0;
+    height: 100%;
 }
 
 .icon-large:before {
-	/* Copied from font-awesome.css */
-	vertical-align: -10%;
-	font-size: 1.3333333333333333em;
+    /* Copied from font-awesome.css */
+    vertical-align: -10%;
+    font-size: 1.3333333333333333em;
 }
 
 .choices {
     z-index: 500;
     display: inline-block;
-	width: 250px;
+    width: 250px;
     //height: 100px;
 }
 
@@ -503,167 +522,176 @@ form {
 }
 
 .input-prepend.phone-expand {
-	position: relative;
-	.input-wrapper {
-		display: inline-block;
-		@media @media-phone {
-			display: block;
-			position: absolute;
-			left: 29px;
-			right: 0;
-			top: 0;
-			bottom: 0;
-			input {
-				display: block;
-				width: 100%;
-				height: 100%;
-				.box-sizing(border-box);
-			}
-		}
-	}
+    position: relative;
+
+    .input-wrapper {
+        display: inline-block;
+        @media @media-phone {
+            display: block;
+            position: absolute;
+            left: 29px;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            input {
+                display: block;
+                width: 100%;
+                height: 100%;
+                .box-sizing(border-box);
+            }
+        }
+    }
 }
 
 .btn-trough {
-	line-height: 34px;
-	text-align: center;
+    line-height: 34px;
+    text-align: center;
 }
 
 .unselectable {
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: -moz-none;
-	-ms-user-select: none;
-	user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: -moz-none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 #paste-controls {
-	@media @media-tablet {
-		display: inline-block;
-	}
-	@media @media-phone {
-		display: block;
-	}
+    @media @media-tablet {
+        display: inline-block;
+    }
+    @media @media-phone {
+        display: block;
+    }
 }
 
 .button-title {
-	display: none;
-	@media @media-phone {
-		display: inline;
-	}
+    display: none;
+    @media @media-phone {
+        display: inline;
+    }
 }
 
 .button-data-label {
-	display: none;
-	&:not(:empty) {
-		display: inline;
-		@media @media-phone {
-			&:before {
-				content: "[";
-			}
-			&:after {
-				content: "]";
-			}
-		}
-	}
+    display: none;
+
+    &:not(:empty) {
+        display: inline;
+        @media @media-phone {
+            &:before {
+                content: "[";
+            }
+
+            &:after {
+                content: "]";
+            }
+        }
+    }
 }
 
 #partial_container_login_logout {
-	position: relative;
-	padding: 4px;
+    position: relative;
+    padding: 4px;
 }
 
 .blocker {
-	border-radius: 4px;
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	background-color: rgba(0, 0, 0, 0.5);
-	z-index: 10;
-	.spinner {
-		text-align: right;
-		position: absolute;
-		width: 1em;
-		height: 1em;
-		top: 0.5em;
-		right: 1em;
-		color: #999;
-	}
+    border-radius: 4px;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 10;
+
+    .spinner {
+        text-align: right;
+        position: absolute;
+        width: 1em;
+        height: 1em;
+        top: 0.5em;
+        right: 1em;
+        color: #999;
+    }
 }
 
 .grant-container {
-	margin: 2px 0 8px 0;
+    margin: 2px 0 8px 0;
 
-	.grant-item {
-		margin: 2px 0 2px 0;
-	}
+    .grant-item {
+        margin: 2px 0 2px 0;
+    }
 
-	&:empty {
-		margin: 0;
-	}
+    &:empty {
+        margin: 0;
+    }
 }
 
 .grant-tutorial {
-	display: none;
+    display: none;
 }
 
 .flash-container {
-	width: 50%;
-	display: none;
-	margin: 0 auto;
-	.well {
-		z-index: 2048;
-		position: absolute;
+    width: 50%;
+    display: none;
+    margin: 0 auto;
 
-		min-width: 50%;
-		width: 50%;
-		margin: 1em 0 0 0;
-		padding: 6px;
+    .well {
+        z-index: 2048;
+        position: absolute;
 
-		text-align: center;
-		font-weight: bold;
-		display: none;
+        min-width: 50%;
+        width: 50%;
+        margin: 1em 0 0 0;
+        padding: 6px;
 
-		p {
-			margin: 0;
-		}
-	}
+        text-align: center;
+        font-weight: bold;
+        display: none;
 
-	#flash-template {
-	}
+        p {
+            margin: 0;
+        }
+    }
+
+    #flash-template {
+    }
 }
 
 @media @media-phone {
-	#phone-paste-control-container.well {
-		padding: 4px;
-		clear: both;
-	}
-	.dropdown {
-		padding: 0px;
-		&.select2-offscreen {
-			display: block;
-			clear: both;
-			width: 1px !important;
-		}
-	}
-	.dropdown,
-	.phone-expand,
-	.btn-phone-expand,
-	.visible-phone .btn-group,
-	.visible-phone .btn {
-		width: 100%;
-		margin-left: 0;
-		margin-top: .25em;
-		margin-bottom: .25em;
-		.box-sizing(border-box);
-	}
-	.visible-phone .btn-group .btn {
-		width: 50%;
-		margin-top: 0;
-		margin-bottom: 0;
-	}
+    #phone-paste-control-container.well {
+        padding: 4px;
+        clear: both;
+    }
+
+    .dropdown {
+        padding: 0px;
+
+        &.select2-offscreen {
+            display: block;
+            clear: both;
+            width: 1px !important;
+        }
+    }
+
+    .dropdown,
+    .phone-expand,
+    .btn-phone-expand,
+    .visible-phone .btn-group,
+    .visible-phone .btn {
+        width: 100%;
+        margin-left: 0;
+        margin-top: .25em;
+        margin-bottom: .25em;
+        .box-sizing(border-box);
+    }
+
+    .visible-phone .btn-group .btn {
+        width: 50%;
+        margin-top: 0;
+        margin-bottom: 0;
+    }
 }
